@@ -108,18 +108,18 @@ namespace ApiWithoutSecrets {
         0.0f,
 
         0.0f,
-        f,
+        -f,
         0.0f,
         0.0f,
 
         0.0f,
         0.0f,
-        (near_clip + far_clip) / (near_clip - far_clip),
+        far_clip / (near_clip - far_clip),
         -1.0f,
 
         0.0f,
         0.0f,
-        (2.0f * near_clip * far_clip) / (near_clip - far_clip),
+        (near_clip * far_clip) / (near_clip - far_clip),
         0.0f
       };
     }
@@ -143,12 +143,12 @@ namespace ApiWithoutSecrets {
 
         0.0f,
         0.0f,
-        -2.0f / (far_plane - near_plane),
+        1.0f / (near_plane - far_plane),
         0.0f,
 
         -(right_plane + left_plane) / (right_plane - left_plane),
         -(bottom_plane + top_plane) / (bottom_plane - top_plane),
-        -(far_plane + near_plane) / (far_plane - near_plane),
+        near_plane / (near_plane - far_plane),
         1.0f
       };
     }
