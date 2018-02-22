@@ -471,28 +471,28 @@ namespace ApiWithoutSecrets {
       return false;
     }
 
-    memcpy( staging_buffer_memory_pointer, &uniform_data[0], Vulkan.UniformBuffer.Size );
+    memcpy( staging_buffer_memory_pointer, uniform_data.data(), Vulkan.UniformBuffer.Size );
 
     VkMappedMemoryRange flush_range = {
-      VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,              // VkStructureType                        sType
-      nullptr,                                            // const void                            *pNext
-      Vulkan.StagingBuffer.Memory,                        // VkDeviceMemory                         memory
-      0,                                                  // VkDeviceSize                           offset
-      Vulkan.UniformBuffer.Size                           // VkDeviceSize                           size
+      VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,  // VkStructureType  sType
+      nullptr,                                // const void      *pNext
+      Vulkan.StagingBuffer.Memory,            // VkDeviceMemory   memory
+      0,                                      // VkDeviceSize     offset
+      Vulkan.UniformBuffer.Size               // VkDeviceSize     size
     };
     vkFlushMappedMemoryRanges( GetDevice(), 1, &flush_range );
 
     vkUnmapMemory( GetDevice(), Vulkan.StagingBuffer.Memory );
 
     // Prepare command buffer to copy data from staging buffer to a uniform buffer
+    VkCommandBuffer command_buffer = Vulkan.RenderingResources[0].CommandBuffer;
+
     VkCommandBufferBeginInfo command_buffer_begin_info = {
       VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,        // VkStructureType                        sType
       nullptr,                                            // const void                            *pNext
       VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,        // VkCommandBufferUsageFlags              flags
       nullptr                                             // const VkCommandBufferInheritanceInfo  *pInheritanceInfo
     };
-
-    VkCommandBuffer command_buffer = Vulkan.RenderingResources[0].CommandBuffer;
 
     vkBeginCommandBuffer( command_buffer, &command_buffer_begin_info);
 
@@ -506,7 +506,7 @@ namespace ApiWithoutSecrets {
     VkBufferMemoryBarrier buffer_memory_barrier = {
       VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,            // VkStructureType                        sType;
       nullptr,                                            // const void                            *pNext
-      VK_ACCESS_MEMORY_WRITE_BIT,                         // VkAccessFlags                          srcAccessMask
+      VK_ACCESS_TRANSFER_WRITE_BIT,                       // VkAccessFlags                          srcAccessMask
       VK_ACCESS_UNIFORM_READ_BIT,                         // VkAccessFlags                          dstAccessMask
       VK_QUEUE_FAMILY_IGNORED,                            // uint32_t                               srcQueueFamilyIndex
       VK_QUEUE_FAMILY_IGNORED,                            // uint32_t                               dstQueueFamilyIndex
@@ -536,7 +536,6 @@ namespace ApiWithoutSecrets {
     }
 
     vkDeviceWaitIdle( GetDevice() );
-
     return true;
   }
 
@@ -563,7 +562,7 @@ namespace ApiWithoutSecrets {
       nullptr,                                              // const void                          *pNext
       0,                                                    // VkDescriptorSetLayoutCreateFlags     flags
       static_cast<uint32_t>(layout_bindings.size()),        // uint32_t                             bindingCount
-      &layout_bindings[0]                                   // const VkDescriptorSetLayoutBinding  *pBindings
+      layout_bindings.data()                                // const VkDescriptorSetLayoutBinding  *pBindings
     };
 
     if( vkCreateDescriptorSetLayout( GetDevice(), &descriptor_set_layout_create_info, nullptr, &Vulkan.DescriptorSet.Layout ) != VK_SUCCESS ) {
@@ -577,22 +576,22 @@ namespace ApiWithoutSecrets {
   bool Tutorial07::CreateDescriptorPool() {
     std::vector<VkDescriptorPoolSize> pool_sizes = {
       {
-        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,    // VkDescriptorType               type
-        1                                             // uint32_t                       descriptorCount
+        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,          // VkDescriptorType                     type
+        1                                                   // uint32_t                             descriptorCount
       },
       {
-        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,            // VkDescriptorType               type
-        1                                             // uint32_t                       descriptorCount
+        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,                  // VkDescriptorType                     type
+        1                                                   // uint32_t                             descriptorCount
       }
     };
 
     VkDescriptorPoolCreateInfo descriptor_pool_create_info = {
-      VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,  // VkStructureType                sType
-      nullptr,                                        // const void                    *pNext
-      0,                                              // VkDescriptorPoolCreateFlags    flags
-      1,                                              // uint32_t                       maxSets
-      static_cast<uint32_t>(pool_sizes.size()),       // uint32_t                       poolSizeCount
-      &pool_sizes[0]                                  // const VkDescriptorPoolSize    *pPoolSizes
+      VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,        // VkStructureType                      sType
+      nullptr,                                              // const void                          *pNext
+      0,                                                    // VkDescriptorPoolCreateFlags          flags
+      1,                                                    // uint32_t                             maxSets
+      static_cast<uint32_t>(pool_sizes.size()),             // uint32_t                             poolSizeCount
+      pool_sizes.data()                                     // const VkDescriptorPoolSize          *pPoolSizes
     };
 
     if( vkCreateDescriptorPool( GetDevice(), &descriptor_pool_create_info, nullptr, &Vulkan.DescriptorSet.Pool ) != VK_SUCCESS ) {
@@ -736,7 +735,6 @@ namespace ApiWithoutSecrets {
       std::cout << "Could not create pipeline layout!" << std::endl;
       return false;
     }
-
     return true;
   }
 
