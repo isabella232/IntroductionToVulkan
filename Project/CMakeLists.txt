@@ -17,6 +17,8 @@
 cmake_minimum_required (VERSION 3.0)
 project( "IntroductionToVulkan" )
 
+set_property( GLOBAL PROPERTY USE_FOLDERS ON )
+
 if( CMAKE_BUILD_TYPE STREQUAL "" )
 	set( CMAKE_BUILD_TYPE "debug" )
 endif()
@@ -54,7 +56,8 @@ macro( add_executable _number _name )
 	_add_executable( ${TARGET_NAME} ${ARGN} )
 	target_compile_definitions( ${TARGET_NAME} PRIVATE USE_SWAPCHAIN_EXTENSIONS )
 	target_link_libraries( ${TARGET_NAME} ${PLATFORM_LIBRARY} )
-	
+	set_property( TARGET ${TARGET_NAME} PROPERTY FOLDER "Tutorials" )
+
 	if( EXISTS "${CMAKE_SOURCE_DIR}/Tutorial${_number}/Data${_number}/" )
 		file( COPY "${CMAKE_SOURCE_DIR}/Tutorial${_number}/Data${_number}/" DESTINATION "${CMAKE_SOURCE_DIR}/build/Data${_number}" )
 	endif()
@@ -117,6 +120,7 @@ _add_executable( "01-The_Beginning"
 	Tutorial01/main.cpp
 	Tutorial01/Tutorial01.cpp )
 	target_link_libraries( "01-The_Beginning" ${PLATFORM_LIBRARY} )
+	set_property( TARGET "01-The_Beginning" PROPERTY FOLDER "Tutorials" )
 
 add_executable( "02" "Swapchain"
 	${ALL_BASIC_SHARED_FILES}
