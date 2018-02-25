@@ -14,16 +14,16 @@
 // under the License.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "Tutorial07.h"
+#include "Tutorial06.h"
 #include "VulkanFunctions.h"
 
 namespace ApiWithoutSecrets {
 
-  Tutorial07::Tutorial07() :
+  Tutorial06::Tutorial06() :
     Vulkan() {
   }
 
-  bool Tutorial07::CreateRenderingResources() {
+  bool Tutorial06::CreateRenderingResources() {
     if( !CreateCommandBuffers() ) {
       return false;
     }
@@ -36,7 +36,7 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::CreateCommandBuffers() {
+  bool Tutorial06::CreateCommandBuffers() {
     if( !CreateCommandPool( GetGraphicsQueue().FamilyIndex, &Vulkan.CommandPool ) ) {
       std::cout << "Could not create command pool!" << std::endl;
       return false;
@@ -50,7 +50,7 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::CreateCommandPool( uint32_t queue_family_index, VkCommandPool *pool ) {
+  bool Tutorial06::CreateCommandPool( uint32_t queue_family_index, VkCommandPool *pool ) {
     VkCommandPoolCreateInfo cmd_pool_create_info = {
       VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,       // VkStructureType                sType
       nullptr,                                          // const void                    *pNext
@@ -65,7 +65,7 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::AllocateCommandBuffers( VkCommandPool pool, uint32_t count, VkCommandBuffer *command_buffers ) {
+  bool Tutorial06::AllocateCommandBuffers( VkCommandPool pool, uint32_t count, VkCommandBuffer *command_buffers ) {
     VkCommandBufferAllocateInfo command_buffer_allocate_info = {
       VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,   // VkStructureType                sType
       nullptr,                                          // const void                    *pNext
@@ -80,7 +80,7 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::CreateSemaphores() {
+  bool Tutorial06::CreateSemaphores() {
     VkSemaphoreCreateInfo semaphore_create_info = {
       VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,      // VkStructureType          sType
       nullptr,                                      // const void*              pNext
@@ -97,7 +97,7 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::CreateFences() {
+  bool Tutorial06::CreateFences() {
     VkFenceCreateInfo fence_create_info = {
       VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,              // VkStructureType                sType
       nullptr,                                          // const void                    *pNext
@@ -113,7 +113,7 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::CreateStagingBuffer() {
+  bool Tutorial06::CreateStagingBuffer() {
     Vulkan.StagingBuffer.Size = 1000000;
     if( !CreateBuffer( VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, Vulkan.StagingBuffer ) ) {
       std::cout << "Could not create staging buffer!" << std::endl;
@@ -123,7 +123,7 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::CreateBuffer( VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memoryProperty, BufferParameters &buffer ) {
+  bool Tutorial06::CreateBuffer( VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memoryProperty, BufferParameters &buffer ) {
     VkBufferCreateInfo buffer_create_info = {
       VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,             // VkStructureType        sType
       nullptr,                                          // const void            *pNext
@@ -153,7 +153,7 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::AllocateBufferMemory( VkBuffer buffer, VkMemoryPropertyFlagBits property, VkDeviceMemory *memory ) {
+  bool Tutorial06::AllocateBufferMemory( VkBuffer buffer, VkMemoryPropertyFlagBits property, VkDeviceMemory *memory ) {
     VkMemoryRequirements buffer_memory_requirements;
     vkGetBufferMemoryRequirements( GetDevice(), buffer, &buffer_memory_requirements );
 
@@ -179,9 +179,9 @@ namespace ApiWithoutSecrets {
     return false;
   }
 
-  bool Tutorial07::CreateTexture() {
+  bool Tutorial06::CreateTexture() {
     int width = 0, height = 0, data_size = 0;
-    std::vector<char> texture_data = Tools::GetImageData( "Data07/texture.png", 4, &width, &height, nullptr, &data_size );
+    std::vector<char> texture_data = Tools::GetImageData( "Data/Tutorials/06/texture.png", 4, &width, &height, nullptr, &data_size );
     if( texture_data.size() == 0 ) {
       return false;
     }
@@ -219,7 +219,7 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::CreateImage( uint32_t width, uint32_t height, VkImage *image ) {
+  bool Tutorial06::CreateImage( uint32_t width, uint32_t height, VkImage *image ) {
     VkImageCreateInfo image_create_info = {
       VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,                  // VkStructureType            sType;
       nullptr,                                              // const void                *pNext
@@ -246,7 +246,7 @@ namespace ApiWithoutSecrets {
     return vkCreateImage( GetDevice(), &image_create_info, nullptr, image ) == VK_SUCCESS;
   }
 
-  bool Tutorial07::AllocateImageMemory( VkImage image, VkMemoryPropertyFlagBits property, VkDeviceMemory *memory ) {
+  bool Tutorial06::AllocateImageMemory( VkImage image, VkMemoryPropertyFlagBits property, VkDeviceMemory *memory ) {
     VkMemoryRequirements image_memory_requirements;
     vkGetImageMemoryRequirements( GetDevice(), image, &image_memory_requirements );
 
@@ -272,7 +272,7 @@ namespace ApiWithoutSecrets {
     return false;
   }
 
-  bool Tutorial07::CreateImageView( ImageParameters &image_parameters ) {
+  bool Tutorial06::CreateImageView( ImageParameters &image_parameters ) {
     VkImageViewCreateInfo image_view_create_info = {
       VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,             // VkStructureType            sType
       nullptr,                                              // const void                *pNext
@@ -298,7 +298,7 @@ namespace ApiWithoutSecrets {
     return vkCreateImageView( GetDevice(), &image_view_create_info, nullptr, &image_parameters.View ) == VK_SUCCESS;
   }
 
-  bool Tutorial07::CreateSampler( VkSampler *sampler ) {
+  bool Tutorial06::CreateSampler( VkSampler *sampler ) {
     VkSamplerCreateInfo sampler_create_info = {
       VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,                // VkStructureType            sType
       nullptr,                                              // const void*                pNext
@@ -323,7 +323,7 @@ namespace ApiWithoutSecrets {
     return vkCreateSampler( GetDevice(), &sampler_create_info, nullptr, sampler ) == VK_SUCCESS;
   }
 
-  bool Tutorial07::CopyTextureData( char *texture_data, uint32_t data_size, uint32_t width, uint32_t height ) {
+  bool Tutorial06::CopyTextureData( char *texture_data, uint32_t data_size, uint32_t width, uint32_t height ) {
     // Prepare data in staging buffer
 
     void *staging_buffer_memory_pointer;
@@ -440,129 +440,21 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::CreateUniformBuffer() {
-    Vulkan.UniformBuffer.Size = 16 * sizeof(float);
-    if( !CreateBuffer( VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, Vulkan.UniformBuffer ) ) {
-      std::cout << "Could not create uniform buffer!" << std::endl;
-      return false;
-    }
-
-    if( !CopyUniformBufferData() ) {
-      return false;
-    }
-
-    return true;
-  }
-
-  const std::array<float, 16> Tutorial07::GetUniformBufferData() const {
-    float half_width = static_cast<float>(GetSwapChain().Extent.width) * 0.5f;
-    float half_height = static_cast<float>(GetSwapChain().Extent.height) * 0.5f;
-
-    return Tools::GetOrthographicProjectionMatrix( -half_width, half_width, -half_height, half_height, -1.0f, 1.0f );
-  }
-
-  bool Tutorial07::CopyUniformBufferData() {
-    // Prepare data in staging buffer
-    const std::array<float, 16> uniform_data = GetUniformBufferData();
-
-    void *staging_buffer_memory_pointer;
-    if( vkMapMemory( GetDevice(), Vulkan.StagingBuffer.Memory, 0, Vulkan.UniformBuffer.Size, 0, &staging_buffer_memory_pointer) != VK_SUCCESS ) {
-      std::cout << "Could not map memory and upload data to a staging buffer!" << std::endl;
-      return false;
-    }
-
-    memcpy( staging_buffer_memory_pointer, uniform_data.data(), Vulkan.UniformBuffer.Size );
-
-    VkMappedMemoryRange flush_range = {
-      VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,  // VkStructureType  sType
-      nullptr,                                // const void      *pNext
-      Vulkan.StagingBuffer.Memory,            // VkDeviceMemory   memory
-      0,                                      // VkDeviceSize     offset
-      Vulkan.UniformBuffer.Size               // VkDeviceSize     size
-    };
-    vkFlushMappedMemoryRanges( GetDevice(), 1, &flush_range );
-
-    vkUnmapMemory( GetDevice(), Vulkan.StagingBuffer.Memory );
-
-    // Prepare command buffer to copy data from staging buffer to a uniform buffer
-    VkCommandBuffer command_buffer = Vulkan.RenderingResources[0].CommandBuffer;
-
-    VkCommandBufferBeginInfo command_buffer_begin_info = {
-      VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,        // VkStructureType                        sType
-      nullptr,                                            // const void                            *pNext
-      VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,        // VkCommandBufferUsageFlags              flags
-      nullptr                                             // const VkCommandBufferInheritanceInfo  *pInheritanceInfo
-    };
-
-    vkBeginCommandBuffer( command_buffer, &command_buffer_begin_info);
-
-    VkBufferCopy buffer_copy_info = {
-      0,                                                  // VkDeviceSize                           srcOffset
-      0,                                                  // VkDeviceSize                           dstOffset
-      Vulkan.UniformBuffer.Size                           // VkDeviceSize                           size
-    };
-    vkCmdCopyBuffer( command_buffer, Vulkan.StagingBuffer.Handle, Vulkan.UniformBuffer.Handle, 1, &buffer_copy_info );
-
-    VkBufferMemoryBarrier buffer_memory_barrier = {
-      VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,            // VkStructureType                        sType;
-      nullptr,                                            // const void                            *pNext
-      VK_ACCESS_TRANSFER_WRITE_BIT,                       // VkAccessFlags                          srcAccessMask
-      VK_ACCESS_UNIFORM_READ_BIT,                         // VkAccessFlags                          dstAccessMask
-      VK_QUEUE_FAMILY_IGNORED,                            // uint32_t                               srcQueueFamilyIndex
-      VK_QUEUE_FAMILY_IGNORED,                            // uint32_t                               dstQueueFamilyIndex
-      Vulkan.UniformBuffer.Handle,                        // VkBuffer                               buffer
-      0,                                                  // VkDeviceSize                           offset
-      VK_WHOLE_SIZE                                       // VkDeviceSize                           size
-    };
-    vkCmdPipelineBarrier( command_buffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, 0, 0, nullptr, 1, &buffer_memory_barrier, 0, nullptr );
-
-    vkEndCommandBuffer( command_buffer );
-
-    // Submit command buffer and copy data from staging buffer to a vertex buffer
-    VkSubmitInfo submit_info = {
-      VK_STRUCTURE_TYPE_SUBMIT_INFO,                      // VkStructureType                        sType
-      nullptr,                                            // const void                            *pNext
-      0,                                                  // uint32_t                               waitSemaphoreCount
-      nullptr,                                            // const VkSemaphore                     *pWaitSemaphores
-      nullptr,                                            // const VkPipelineStageFlags            *pWaitDstStageMask;
-      1,                                                  // uint32_t                               commandBufferCount
-      &command_buffer,                                    // const VkCommandBuffer                 *pCommandBuffers
-      0,                                                  // uint32_t                               signalSemaphoreCount
-      nullptr                                             // const VkSemaphore                     *pSignalSemaphores
-    };
-
-    if( vkQueueSubmit( GetGraphicsQueue().Handle, 1, &submit_info, VK_NULL_HANDLE ) != VK_SUCCESS ) {
-      return false;
-    }
-
-    vkDeviceWaitIdle( GetDevice() );
-    return true;
-  }
-
-  bool Tutorial07::CreateDescriptorSetLayout() {
-    std::vector<VkDescriptorSetLayoutBinding> layout_bindings = {
-      {
-        0,                                                  // uint32_t                             binding
-        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,          // VkDescriptorType                     descriptorType
-        1,                                                  // uint32_t                             descriptorCount
-        VK_SHADER_STAGE_FRAGMENT_BIT,                       // VkShaderStageFlags                   stageFlags
-        nullptr                                             // const VkSampler                     *pImmutableSamplers
-      },
-      {
-        1,                                                  // uint32_t                             binding
-        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,                  // VkDescriptorType                     descriptorType
-        1,                                                  // uint32_t                             descriptorCount
-        VK_SHADER_STAGE_VERTEX_BIT,                         // VkShaderStageFlags                   stageFlags
-        nullptr                                             // const VkSampler                     *pImmutableSamplers
-      }
+  bool Tutorial06::CreateDescriptorSetLayout() {
+    VkDescriptorSetLayoutBinding layout_binding = {
+      0,                                                    // uint32_t                             binding
+      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,            // VkDescriptorType                     descriptorType
+      1,                                                    // uint32_t                             descriptorCount
+      VK_SHADER_STAGE_FRAGMENT_BIT,                         // VkShaderStageFlags                   stageFlags
+      nullptr                                               // const VkSampler                     *pImmutableSamplers
     };
 
     VkDescriptorSetLayoutCreateInfo descriptor_set_layout_create_info = {
       VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,  // VkStructureType                      sType
       nullptr,                                              // const void                          *pNext
       0,                                                    // VkDescriptorSetLayoutCreateFlags     flags
-      static_cast<uint32_t>(layout_bindings.size()),        // uint32_t                             bindingCount
-      layout_bindings.data()                                // const VkDescriptorSetLayoutBinding  *pBindings
+      1,                                                    // uint32_t                             bindingCount
+      &layout_binding                                       // const VkDescriptorSetLayoutBinding  *pBindings
     };
 
     if( vkCreateDescriptorSetLayout( GetDevice(), &descriptor_set_layout_create_info, nullptr, &Vulkan.DescriptorSet.Layout ) != VK_SUCCESS ) {
@@ -573,25 +465,19 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::CreateDescriptorPool() {
-    std::vector<VkDescriptorPoolSize> pool_sizes = {
-      {
-        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,          // VkDescriptorType                     type
-        1                                                   // uint32_t                             descriptorCount
-      },
-      {
-        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,                  // VkDescriptorType                     type
-        1                                                   // uint32_t                             descriptorCount
-      }
+  bool Tutorial06::CreateDescriptorPool() {
+    VkDescriptorPoolSize pool_size = {
+      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,      // VkDescriptorType               type
+      1                                               // uint32_t                       descriptorCount
     };
 
     VkDescriptorPoolCreateInfo descriptor_pool_create_info = {
-      VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,        // VkStructureType                      sType
-      nullptr,                                              // const void                          *pNext
-      0,                                                    // VkDescriptorPoolCreateFlags          flags
-      1,                                                    // uint32_t                             maxSets
-      static_cast<uint32_t>(pool_sizes.size()),             // uint32_t                             poolSizeCount
-      pool_sizes.data()                                     // const VkDescriptorPoolSize          *pPoolSizes
+      VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,  // VkStructureType                sType
+      nullptr,                                        // const void                    *pNext
+      0,                                              // VkDescriptorPoolCreateFlags    flags
+      1,                                              // uint32_t                       maxSets
+      1,                                              // uint32_t                       poolSizeCount
+      &pool_size                                      // const VkDescriptorPoolSize    *pPoolSizes
     };
 
     if( vkCreateDescriptorPool( GetDevice(), &descriptor_pool_create_info, nullptr, &Vulkan.DescriptorSet.Pool ) != VK_SUCCESS ) {
@@ -602,7 +488,7 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::AllocateDescriptorSet() {
+  bool Tutorial06::AllocateDescriptorSet() {
     VkDescriptorSetAllocateInfo descriptor_set_allocate_info = {
       VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, // VkStructureType                sType
       nullptr,                                        // const void                    *pNext
@@ -619,51 +505,31 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::UpdateDescriptorSet() {
+  bool Tutorial06::UpdateDescriptorSet() {
     VkDescriptorImageInfo image_info = {
       Vulkan.Image.Sampler,                           // VkSampler                      sampler
       Vulkan.Image.View,                              // VkImageView                    imageView
       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL        // VkImageLayout                  imageLayout
     };
 
-    VkDescriptorBufferInfo buffer_info = {
-      Vulkan.UniformBuffer.Handle,                    // VkBuffer                       buffer
-      0,                                              // VkDeviceSize                   offset
-      Vulkan.UniformBuffer.Size                       // VkDeviceSize                   range
+    VkWriteDescriptorSet descriptor_writes = {
+      VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,         // VkStructureType                sType
+      nullptr,                                        // const void                    *pNext
+      Vulkan.DescriptorSet.Handle,                    // VkDescriptorSet                dstSet
+      0,                                              // uint32_t                       dstBinding
+      0,                                              // uint32_t                       dstArrayElement
+      1,                                              // uint32_t                       descriptorCount
+      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,      // VkDescriptorType               descriptorType
+      &image_info,                                    // const VkDescriptorImageInfo   *pImageInfo
+      nullptr,                                        // const VkDescriptorBufferInfo  *pBufferInfo
+      nullptr                                         // const VkBufferView            *pTexelBufferView
     };
 
-    std::vector<VkWriteDescriptorSet> descriptor_writes = {
-      {
-        VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,       // VkStructureType                sType
-        nullptr,                                      // const void                    *pNext
-        Vulkan.DescriptorSet.Handle,                  // VkDescriptorSet                dstSet
-        0,                                            // uint32_t                       dstBinding
-        0,                                            // uint32_t                       dstArrayElement
-        1,                                            // uint32_t                       descriptorCount
-        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,    // VkDescriptorType               descriptorType
-        &image_info,                                  // const VkDescriptorImageInfo   *pImageInfo
-        nullptr,                                      // const VkDescriptorBufferInfo  *pBufferInfo
-        nullptr                                       // const VkBufferView            *pTexelBufferView
-      },
-      {
-        VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,       // VkStructureType                sType
-        nullptr,                                      // const void                    *pNext
-        Vulkan.DescriptorSet.Handle,                  // VkDescriptorSet                dstSet
-        1,                                            // uint32_t                       dstBinding
-        0,                                            // uint32_t                       dstArrayElement
-        1,                                            // uint32_t                       descriptorCount
-        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,            // VkDescriptorType               descriptorType
-        nullptr,                                      // const VkDescriptorImageInfo   *pImageInfo
-        &buffer_info,                                 // const VkDescriptorBufferInfo  *pBufferInfo
-        nullptr                                       // const VkBufferView            *pTexelBufferView
-      }
-    };
-
-    vkUpdateDescriptorSets( GetDevice(), static_cast<uint32_t>(descriptor_writes.size()), &descriptor_writes[0], 0, nullptr );
+    vkUpdateDescriptorSets( GetDevice(), 1, &descriptor_writes, 0, nullptr );
     return true;
   }
 
-  bool Tutorial07::CreateRenderPass() {
+  bool Tutorial06::CreateRenderPass() {
     VkAttachmentDescription attachment_descriptions[] = {
       {
         0,                                          // VkAttachmentDescriptionFlags   flags
@@ -720,7 +586,7 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::CreatePipelineLayout() {
+  bool Tutorial06::CreatePipelineLayout() {
     VkPipelineLayoutCreateInfo layout_create_info = {
       VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,  // VkStructureType                sType
       nullptr,                                        // const void                    *pNext
@@ -735,12 +601,13 @@ namespace ApiWithoutSecrets {
       std::cout << "Could not create pipeline layout!" << std::endl;
       return false;
     }
+
     return true;
   }
 
-  bool Tutorial07::CreatePipeline() {
-    Tools::AutoDeleter<VkShaderModule, PFN_vkDestroyShaderModule> vertex_shader_module = CreateShaderModule( "Data07/vert.spv" );
-    Tools::AutoDeleter<VkShaderModule, PFN_vkDestroyShaderModule> fragment_shader_module = CreateShaderModule( "Data07/frag.spv" );
+  bool Tutorial06::CreatePipeline() {
+    Tools::AutoDeleter<VkShaderModule, PFN_vkDestroyShaderModule> vertex_shader_module = CreateShaderModule( "Data/Tutorials/06/vert.spv" );
+    Tools::AutoDeleter<VkShaderModule, PFN_vkDestroyShaderModule> fragment_shader_module = CreateShaderModule( "Data/Tutorials/06/frag.spv" );
 
     if( !vertex_shader_module || !fragment_shader_module ) {
       return false;
@@ -911,7 +778,7 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  Tools::AutoDeleter<VkShaderModule, PFN_vkDestroyShaderModule> Tutorial07::CreateShaderModule( const char* filename ) {
+  Tools::AutoDeleter<VkShaderModule, PFN_vkDestroyShaderModule> Tutorial06::CreateShaderModule( const char* filename ) {
     const std::vector<char> code = Tools::GetBinaryFileContents( filename );
     if( code.size() == 0 ) {
       return Tools::AutoDeleter<VkShaderModule, PFN_vkDestroyShaderModule>();
@@ -934,7 +801,7 @@ namespace ApiWithoutSecrets {
     return Tools::AutoDeleter<VkShaderModule, PFN_vkDestroyShaderModule>( shader_module, vkDestroyShaderModule, GetDevice() );
   }
 
-  bool Tutorial07::CreateVertexBuffer() {
+  bool Tutorial06::CreateVertexBuffer() {
     const std::vector<float>& vertex_data = GetVertexData();
 
     Vulkan.VertexBuffer.Size = static_cast<uint32_t>(vertex_data.size() * sizeof(vertex_data[0]));
@@ -950,25 +817,25 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  const std::vector<float>& Tutorial07::GetVertexData() const {
+  const std::vector<float>& Tutorial06::GetVertexData() const {
     static const std::vector<float> vertex_data = {
-      -170.0f, -170.0f, 0.0f, 1.0f,
+      -0.7f, -0.7f, 0.0f, 1.0f,
       -0.1f, -0.1f,
       //
-      -170.0f, 170.0f, 0.0f, 1.0f,
+      -0.7f, 0.7f, 0.0f, 1.0f,
       -0.1f, 1.1f,
       //
-      170.0f, -170.0f, 0.0f, 1.0f,
+      0.7f, -0.7f, 0.0f, 1.0f,
       1.1f, -0.1f,
       //
-      170.0f, 170.0f, 0.0f, 1.0f,
+      0.7f, 0.7f, 0.0f, 1.0f,
       1.1f, 1.1f,
     };
 
     return vertex_data;
   }
 
-  bool Tutorial07::CopyVertexData() {
+  bool Tutorial06::CopyVertexData() {
     // Prepare data in staging buffer
     const std::vector<float>& vertex_data = GetVertexData();
 
@@ -1008,7 +875,7 @@ namespace ApiWithoutSecrets {
       0,                                                  // VkDeviceSize                           dstOffset
       Vulkan.VertexBuffer.Size                            // VkDeviceSize                           size
     };
-    vkCmdCopyBuffer(command_buffer, Vulkan.StagingBuffer.Handle, Vulkan.VertexBuffer.Handle, 1, &buffer_copy_info);
+    vkCmdCopyBuffer( command_buffer, Vulkan.StagingBuffer.Handle, Vulkan.VertexBuffer.Handle, 1, &buffer_copy_info );
 
     VkBufferMemoryBarrier buffer_memory_barrier = {
       VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,            // VkStructureType                        sType;
@@ -1047,7 +914,7 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::PrepareFrame( VkCommandBuffer command_buffer, const ImageParameters &image_parameters, VkFramebuffer &framebuffer ) {
+  bool Tutorial06::PrepareFrame( VkCommandBuffer command_buffer, const ImageParameters &image_parameters, VkFramebuffer &framebuffer ) {
     if( !CreateFramebuffer( framebuffer, image_parameters.View ) ) {
       return false;
     }
@@ -1162,7 +1029,7 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::CreateFramebuffer( VkFramebuffer &framebuffer, VkImageView image_view ) {
+  bool Tutorial06::CreateFramebuffer( VkFramebuffer &framebuffer, VkImageView image_view ) {
     if( framebuffer != VK_NULL_HANDLE ) {
       vkDestroyFramebuffer( GetDevice(), framebuffer, nullptr );
       framebuffer = VK_NULL_HANDLE;
@@ -1188,22 +1055,17 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial07::ChildOnWindowSizeChanged() {
-    if( (GetDevice() != VK_NULL_HANDLE) &&
-        (Vulkan.StagingBuffer.Handle != VK_NULL_HANDLE) ) {
-      vkDeviceWaitIdle( GetDevice() );
-      return CopyUniformBufferData();
-    }
+  bool Tutorial06::ChildOnWindowSizeChanged() {
     return true;
   }
 
-  bool Tutorial07::Draw() {
+  bool Tutorial06::Draw() {
     static size_t           resource_index = 0;
     RenderingResourcesData &current_rendering_resource = Vulkan.RenderingResources[resource_index];
     VkSwapchainKHR          swap_chain = GetSwapChain().Handle;
     uint32_t                image_index;
 
-    resource_index = (resource_index + 1) % VulkanTutorial07Parameters::ResourcesCount;
+    resource_index = (resource_index + 1) % VulkanTutorial06Parameters::ResourcesCount;
 
     if( vkWaitForFences( GetDevice(), 1, &current_rendering_resource.Fence, VK_FALSE, 1000000000 ) != VK_SUCCESS ) {
       std::cout << "Waiting for fence takes too long!" << std::endl;
@@ -1270,10 +1132,10 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  void Tutorial07::ChildClear() {
+  void Tutorial06::ChildClear() {
   }
 
-  Tutorial07::~Tutorial07() {
+  Tutorial06::~Tutorial06() {
     if( GetDevice() != VK_NULL_HANDLE ) {
       vkDeviceWaitIdle( GetDevice() );
 
@@ -1329,8 +1191,6 @@ namespace ApiWithoutSecrets {
         Vulkan.DescriptorSet.Layout = VK_NULL_HANDLE;
       }
 
-      DestroyBuffer( Vulkan.UniformBuffer );
-
       if( Vulkan.Image.Sampler != VK_NULL_HANDLE ) {
         vkDestroySampler( GetDevice(), Vulkan.Image.Sampler, nullptr );
         Vulkan.Image.Sampler = VK_NULL_HANDLE;
@@ -1353,7 +1213,7 @@ namespace ApiWithoutSecrets {
     }
   }
 
-  void Tutorial07::DestroyBuffer( BufferParameters& buffer ) {
+  void Tutorial06::DestroyBuffer( BufferParameters& buffer ) {
     if( buffer.Handle != VK_NULL_HANDLE ) {
       vkDestroyBuffer( GetDevice(), buffer.Handle, nullptr );
       buffer.Handle = VK_NULL_HANDLE;

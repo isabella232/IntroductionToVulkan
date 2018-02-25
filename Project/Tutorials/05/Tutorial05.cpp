@@ -14,17 +14,101 @@
 // under the License.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <cstddef>
-#include "Tutorial04.h"
+#include "Tutorial05.h"
 #include "VulkanFunctions.h"
 
 namespace ApiWithoutSecrets {
 
-  Tutorial04::Tutorial04() :
+  Tutorial05::Tutorial05() :
     Vulkan() {
   }
 
-  bool Tutorial04::CreateRenderPass() {
+  bool Tutorial05::CreateRenderingResources() {
+    if( !CreateCommandPool( GetGraphicsQueue().FamilyIndex, &Vulkan.CommandPool ) ) {
+      return false;
+    }
+
+    for( size_t i = 0; i < Vulkan.RenderingResources.size(); ++i ) {
+      if( !AllocateCommandBuffers( Vulkan.CommandPool, 1, &Vulkan.RenderingResources[i].CommandBuffer ) ) {
+        return false;
+      }
+
+      if( !CreateSemaphore( &Vulkan.RenderingResources[i].ImageAvailableSemaphore ) ) {
+        return false;
+      }
+
+      if( !CreateSemaphore( &Vulkan.RenderingResources[i].FinishedRenderingSemaphore ) ) {
+        return false;
+      }
+
+      if( !CreateFence( VK_FENCE_CREATE_SIGNALED_BIT, &Vulkan.RenderingResources[i].Fence ) ) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool Tutorial05::CreateCommandPool( uint32_t queue_family_index, VkCommandPool *pool ) {
+    VkCommandPoolCreateInfo cmd_pool_create_info = {
+      VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,       // VkStructureType                sType
+      nullptr,                                          // const void                    *pNext
+      VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | // VkCommandPoolCreateFlags       flags
+      VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
+      queue_family_index                                // uint32_t                       queueFamilyIndex
+    };
+
+    if( vkCreateCommandPool( GetDevice(), &cmd_pool_create_info, nullptr, pool ) != VK_SUCCESS ) {
+      std::cout << "Could not create command pool!" << std::endl;
+      return false;
+    }
+    return true;
+  }
+
+  bool Tutorial05::AllocateCommandBuffers( VkCommandPool pool, uint32_t count, VkCommandBuffer *command_buffers ) {
+    VkCommandBufferAllocateInfo command_buffer_allocate_info = {
+      VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,   // VkStructureType                sType
+      nullptr,                                          // const void                    *pNext
+      pool,                                             // VkCommandPool                  commandPool
+      VK_COMMAND_BUFFER_LEVEL_PRIMARY,                  // VkCommandBufferLevel           level
+      count                                             // uint32_t                       bufferCount
+    };
+
+    if( vkAllocateCommandBuffers( GetDevice(), &command_buffer_allocate_info, command_buffers ) != VK_SUCCESS ) {
+      std::cout << "Could not allocate command buffer!" << std::endl;
+      return false;
+    }
+    return true;
+  }
+
+  bool Tutorial05::CreateSemaphore( VkSemaphore *semaphore ) {
+    VkSemaphoreCreateInfo semaphore_create_info = {
+      VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,          // VkStructureType                sType
+      nullptr,                                          // const void*                    pNext
+      0                                                 // VkSemaphoreCreateFlags         flags
+    };
+
+    if( vkCreateSemaphore( GetDevice(), &semaphore_create_info, nullptr, semaphore ) != VK_SUCCESS ) {
+      std::cout << "Could not create semaphore!" << std::endl;
+      return false;
+    }
+    return true;
+  }
+
+  bool Tutorial05::CreateFence( VkFenceCreateFlags flags, VkFence *fence ) {
+    VkFenceCreateInfo fence_create_info = {
+      VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,              // VkStructureType                sType
+      nullptr,                                          // const void                    *pNext
+      flags                                             // VkFenceCreateFlags             flags
+    };
+
+    if( vkCreateFence( GetDevice(), &fence_create_info, nullptr, fence ) != VK_SUCCESS ) {
+      std::cout << "Could not create a fence!" << std::endl;
+      return false;
+    }
+    return true;
+  }
+
+  bool Tutorial05::CreateRenderPass() {
     VkAttachmentDescription attachment_descriptions[] = {
       {
         0,                                              // VkAttachmentDescriptionFlags   flags
@@ -102,18 +186,18 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  Tools::AutoDeleter<VkShaderModule, PFN_vkDestroyShaderModule> Tutorial04::CreateShaderModule( const char* filename ) {
+  Tools::AutoDeleter<VkShaderModule, PFN_vkDestroyShaderModule> Tutorial05::CreateShaderModule( const char* filename ) {
     const std::vector<char> code = Tools::GetBinaryFileContents( filename );
     if( code.size() == 0 ) {
       return Tools::AutoDeleter<VkShaderModule, PFN_vkDestroyShaderModule>();
     }
 
     VkShaderModuleCreateInfo shader_module_create_info = {
-      VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,    // VkStructureType                sType
-      nullptr,                                        // const void                    *pNext
-      0,                                              // VkShaderModuleCreateFlags      flags
-      code.size(),                                    // size_t                         codeSize
-      reinterpret_cast<const uint32_t*>(&code[0])     // const uint32_t                *pCode
+      VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,      // VkStructureType                sType
+      nullptr,                                          // const void                    *pNext
+      0,                                                // VkShaderModuleCreateFlags      flags
+      code.size(),                                      // size_t                         codeSize
+      reinterpret_cast<const uint32_t*>(&code[0])       // const uint32_t                *pCode
     };
 
     VkShaderModule shader_module;
@@ -125,15 +209,15 @@ namespace ApiWithoutSecrets {
     return Tools::AutoDeleter<VkShaderModule, PFN_vkDestroyShaderModule>( shader_module, vkDestroyShaderModule, GetDevice() );
   }
 
-  Tools::AutoDeleter<VkPipelineLayout, PFN_vkDestroyPipelineLayout> Tutorial04::CreatePipelineLayout() {
+  Tools::AutoDeleter<VkPipelineLayout, PFN_vkDestroyPipelineLayout> Tutorial05::CreatePipelineLayout() {
     VkPipelineLayoutCreateInfo layout_create_info = {
-      VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,  // VkStructureType                sType
-      nullptr,                                        // const void                    *pNext
-      0,                                              // VkPipelineLayoutCreateFlags    flags
-      0,                                              // uint32_t                       setLayoutCount
-      nullptr,                                        // const VkDescriptorSetLayout   *pSetLayouts
-      0,                                              // uint32_t                       pushConstantRangeCount
-      nullptr                                         // const VkPushConstantRange     *pPushConstantRanges
+      VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,    // VkStructureType                sType
+      nullptr,                                          // const void                    *pNext
+      0,                                                // VkPipelineLayoutCreateFlags    flags
+      0,                                                // uint32_t                       setLayoutCount
+      nullptr,                                          // const VkDescriptorSetLayout   *pSetLayouts
+      0,                                                // uint32_t                       pushConstantRangeCount
+      nullptr                                           // const VkPushConstantRange     *pPushConstantRanges
     };
 
     VkPipelineLayout pipeline_layout;
@@ -145,9 +229,9 @@ namespace ApiWithoutSecrets {
     return Tools::AutoDeleter<VkPipelineLayout, PFN_vkDestroyPipelineLayout>( pipeline_layout, vkDestroyPipelineLayout, GetDevice() );
   }
 
-  bool Tutorial04::CreatePipeline() {
-    Tools::AutoDeleter<VkShaderModule, PFN_vkDestroyShaderModule> vertex_shader_module = CreateShaderModule( "Data04/vert.spv" );
-    Tools::AutoDeleter<VkShaderModule, PFN_vkDestroyShaderModule> fragment_shader_module = CreateShaderModule( "Data04/frag.spv" );
+  bool Tutorial05::CreatePipeline() {
+    Tools::AutoDeleter<VkShaderModule, PFN_vkDestroyShaderModule> vertex_shader_module = CreateShaderModule( "Data/Tutorials/05/vert.spv" );
+    Tools::AutoDeleter<VkShaderModule, PFN_vkDestroyShaderModule> fragment_shader_module = CreateShaderModule( "Data/Tutorials/05/frag.spv" );
 
     if( !vertex_shader_module || !fragment_shader_module ) {
       return false;
@@ -325,77 +409,59 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial04::CreateVertexBuffer() {
-    VertexData vertex_data[] = {
-      {
-        -0.7f, -0.7f, 0.0f, 1.0f,
-        1.0f, 0.0f, 0.0f, 0.0f
-      },
-      {
-        -0.7f, 0.7f, 0.0f, 1.0f,
-        0.0f, 1.0f, 0.0f, 0.0f
-      },
-      {
-        0.7f, -0.7f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f, 0.0f
-      },
-      {
-        0.7f, 0.7f, 0.0f, 1.0f,
-        0.3f, 0.3f, 0.3f, 0.0f
-      }
-    };
+  bool Tutorial05::CreateVertexBuffer() {
+    const std::vector<float>& vertex_data = GetVertexData();
 
-    Vulkan.VertexBuffer.Size = sizeof(vertex_data);
-
-    VkBufferCreateInfo buffer_create_info = {
-      VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,             // VkStructureType        sType
-      nullptr,                                          // const void            *pNext
-      0,                                                // VkBufferCreateFlags    flags
-      Vulkan.VertexBuffer.Size,                         // VkDeviceSize           size
-      VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,                // VkBufferUsageFlags     usage
-      VK_SHARING_MODE_EXCLUSIVE,                        // VkSharingMode          sharingMode
-      0,                                                // uint32_t               queueFamilyIndexCount
-      nullptr                                           // const uint32_t        *pQueueFamilyIndices
-    };
-
-    if( vkCreateBuffer( GetDevice(), &buffer_create_info, nullptr, &Vulkan.VertexBuffer.Handle ) != VK_SUCCESS ) {
-      std::cout << "Could not create a vertex buffer!" << std::endl;
+    Vulkan.VertexBuffer.Size = static_cast<uint32_t>(vertex_data.size() * sizeof(vertex_data[0]));
+    if( !CreateBuffer( VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, Vulkan.VertexBuffer ) ) {
+      std::cout << "Could not create vertex buffer!" << std::endl;
       return false;
     }
-
-    if( !AllocateBufferMemory( Vulkan.VertexBuffer.Handle, &Vulkan.VertexBuffer.Memory ) ) {
-      std::cout << "Could not allocate memory for a vertex buffer!" << std::endl;
-      return false;
-    }
-
-    if( vkBindBufferMemory( GetDevice(), Vulkan.VertexBuffer.Handle, Vulkan.VertexBuffer.Memory, 0 ) != VK_SUCCESS ) {
-      std::cout << "Could not bind memory for a vertex buffer!" << std::endl;
-      return false;
-    }
-
-    void *vertex_buffer_memory_pointer;
-    if( vkMapMemory( GetDevice(), Vulkan.VertexBuffer.Memory, 0, Vulkan.VertexBuffer.Size, 0, &vertex_buffer_memory_pointer ) != VK_SUCCESS ) {
-      std::cout << "Could not map memory and upload data to a vertex buffer!" << std::endl;
-      return false;
-    }
-
-    memcpy( vertex_buffer_memory_pointer, vertex_data, Vulkan.VertexBuffer.Size );
-
-    VkMappedMemoryRange flush_range = {
-      VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,            // VkStructureType        sType
-      nullptr,                                          // const void            *pNext
-      Vulkan.VertexBuffer.Memory,                       // VkDeviceMemory         memory
-      0,                                                // VkDeviceSize           offset
-      VK_WHOLE_SIZE                                     // VkDeviceSize           size
-    };
-    vkFlushMappedMemoryRanges( GetDevice(), 1, &flush_range );
-
-    vkUnmapMemory( GetDevice(), Vulkan.VertexBuffer.Memory );
 
     return true;
   }
 
-  bool Tutorial04::AllocateBufferMemory( VkBuffer buffer, VkDeviceMemory *memory ) {
+  bool Tutorial05::CreateStagingBuffer() {
+    Vulkan.StagingBuffer.Size = 4000;
+    if( !CreateBuffer( VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, Vulkan.StagingBuffer ) ) {
+      std::cout << "Could not staging buffer!" << std::endl;
+      return false;
+    }
+
+    return true;
+  }
+
+  bool Tutorial05::CreateBuffer( VkBufferUsageFlags usage, VkMemoryPropertyFlagBits memoryProperty, BufferParameters &buffer ) {
+    VkBufferCreateInfo buffer_create_info = {
+      VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,             // VkStructureType                sType
+      nullptr,                                          // const void                    *pNext
+      0,                                                // VkBufferCreateFlags            flags
+      buffer.Size,                                      // VkDeviceSize                   size
+      usage,                                            // VkBufferUsageFlags             usage
+      VK_SHARING_MODE_EXCLUSIVE,                        // VkSharingMode                  sharingMode
+      0,                                                // uint32_t                       queueFamilyIndexCount
+      nullptr                                           // const uint32_t                *pQueueFamilyIndices
+    };
+
+    if( vkCreateBuffer( GetDevice(), &buffer_create_info, nullptr, &buffer.Handle ) != VK_SUCCESS ) {
+      std::cout << "Could not create buffer!" << std::endl;
+      return false;
+    }
+
+    if( !AllocateBufferMemory( buffer.Handle, memoryProperty, &buffer.Memory ) ) {
+      std::cout << "Could not allocate memory for a buffer!" << std::endl;
+      return false;
+    }
+
+    if( vkBindBufferMemory( GetDevice(), buffer.Handle, buffer.Memory, 0 ) != VK_SUCCESS ) {
+      std::cout << "Could not bind memory to a buffer!" << std::endl;
+      return false;
+    }
+
+    return true;
+  }
+
+  bool Tutorial05::AllocateBufferMemory( VkBuffer buffer, VkMemoryPropertyFlagBits property, VkDeviceMemory *memory ) {
     VkMemoryRequirements buffer_memory_requirements;
     vkGetBufferMemoryRequirements( GetDevice(), buffer, &buffer_memory_requirements );
 
@@ -404,13 +470,13 @@ namespace ApiWithoutSecrets {
 
     for( uint32_t i = 0; i < memory_properties.memoryTypeCount; ++i ) {
       if( (buffer_memory_requirements.memoryTypeBits & (1 << i)) &&
-        (memory_properties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) ) {
+         ((memory_properties.memoryTypes[i].propertyFlags & property) == property) ) {
 
         VkMemoryAllocateInfo memory_allocate_info = {
-          VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,     // VkStructureType                        sType
-          nullptr,                                    // const void                            *pNext
-          buffer_memory_requirements.size,            // VkDeviceSize                           allocationSize
-          i                                           // uint32_t                               memoryTypeIndex
+          VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,       // VkStructureType                sType
+          nullptr,                                      // const void                    *pNext
+          buffer_memory_requirements.size,              // VkDeviceSize                   allocationSize
+          i                                             // uint32_t                       memoryTypeIndex
         };
 
         if( vkAllocateMemory( GetDevice(), &memory_allocate_info, nullptr, memory ) == VK_SUCCESS ) {
@@ -421,152 +487,159 @@ namespace ApiWithoutSecrets {
     return false;
   }
 
-  bool Tutorial04::CreateRenderingResources() {
-    if( !CreateCommandBuffers() ) {
-      return false;
-    }
-    if( !CreateSemaphores() ) {
-      return false;
-    }
-    if( !CreateFences() ) {
-      return false;
-    }
-    return true;
-  }
-
-  bool Tutorial04::CreateCommandBuffers() {
-    if( !CreateCommandPool( GetGraphicsQueue().FamilyIndex, &Vulkan.CommandPool ) ) {
-      std::cout << "Could not create command pool!" << std::endl;
-      return false;
-    }
-    for( size_t i = 0; i < Vulkan.RenderingResources.size(); ++i ) {
-      if( !AllocateCommandBuffers( Vulkan.CommandPool, 1, &Vulkan.RenderingResources[i].CommandBuffer ) ) {
-        std::cout << "Could not allocate command buffer!" << std::endl;
-        return false;
-      }
-    }
-    return true;
-  }
-
-  bool Tutorial04::CreateCommandPool( uint32_t queue_family_index, VkCommandPool *pool ) {
-    VkCommandPoolCreateInfo cmd_pool_create_info = {
-      VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,       // VkStructureType                sType
-      nullptr,                                          // const void                    *pNext
-      VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | // VkCommandPoolCreateFlags       flags
-      VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
-      queue_family_index                                // uint32_t                       queueFamilyIndex
+  const std::vector<float>& Tutorial05::GetVertexData() const {
+    static const std::vector<float> vertex_data = {
+      -0.7f, -0.7f, 0.0f, 1.0f,
+      1.0f, 0.0f, 0.0f, 0.0f,
+      //
+      -0.7f, 0.7f, 0.0f, 1.0f,
+      0.0f, 1.0f, 0.0f, 0.0f,
+      //
+      0.7f, -0.7f, 0.0f, 1.0f,
+      0.0f, 0.0f, 1.0f, 0.0f,
+      //
+      0.7f, 0.7f, 0.0f, 1.0f,
+      0.3f, 0.3f, 0.3f, 0.0f
     };
 
-    if( vkCreateCommandPool( GetDevice(), &cmd_pool_create_info, nullptr, pool ) != VK_SUCCESS ) {
+    return vertex_data;
+  }
+
+  bool Tutorial05::CopyVertexData() {
+    // Prepare data in a staging buffer
+    const std::vector<float>& vertex_data = GetVertexData();
+
+    void *staging_buffer_memory_pointer;
+    if( vkMapMemory( GetDevice(), Vulkan.StagingBuffer.Memory, 0, Vulkan.VertexBuffer.Size, 0, &staging_buffer_memory_pointer) != VK_SUCCESS ) {
+      std::cout << "Could not map memory and upload data to a staging buffer!" << std::endl;
       return false;
     }
-    return true;
-  }
 
-  bool Tutorial04::AllocateCommandBuffers( VkCommandPool pool, uint32_t count, VkCommandBuffer *command_buffers ) {
-    VkCommandBufferAllocateInfo command_buffer_allocate_info = {
-      VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,   // VkStructureType                sType
-      nullptr,                                          // const void                    *pNext
-      pool,                                             // VkCommandPool                  commandPool
-      VK_COMMAND_BUFFER_LEVEL_PRIMARY,                  // VkCommandBufferLevel           level
-      count                                             // uint32_t                       bufferCount
+    memcpy( staging_buffer_memory_pointer, &vertex_data[0], Vulkan.VertexBuffer.Size );
+
+    VkMappedMemoryRange flush_range = {
+      VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,            // VkStructureType                        sType
+      nullptr,                                          // const void                            *pNext
+      Vulkan.StagingBuffer.Memory,                      // VkDeviceMemory                         memory
+      0,                                                // VkDeviceSize                           offset
+      Vulkan.VertexBuffer.Size                          // VkDeviceSize                           size
+    };
+    vkFlushMappedMemoryRanges( GetDevice(), 1, &flush_range );
+
+    vkUnmapMemory( GetDevice(), Vulkan.StagingBuffer.Memory );
+
+    // Prepare command buffer to copy data from staging buffer to a vertex buffer
+    VkCommandBufferBeginInfo command_buffer_begin_info = {
+      VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,      // VkStructureType                        sType
+      nullptr,                                          // const void                            *pNext
+      VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,      // VkCommandBufferUsageFlags              flags
+      nullptr                                           // const VkCommandBufferInheritanceInfo  *pInheritanceInfo
     };
 
-    if( vkAllocateCommandBuffers( GetDevice(), &command_buffer_allocate_info, command_buffers ) != VK_SUCCESS ) {
+    VkCommandBuffer command_buffer = Vulkan.RenderingResources[0].CommandBuffer;
+
+    vkBeginCommandBuffer( command_buffer, &command_buffer_begin_info);
+
+    VkBufferCopy buffer_copy_info = {
+      0,                                                // VkDeviceSize                           srcOffset
+      0,                                                // VkDeviceSize                           dstOffset
+      Vulkan.VertexBuffer.Size                          // VkDeviceSize                           size
+    };
+    vkCmdCopyBuffer( command_buffer, Vulkan.StagingBuffer.Handle, Vulkan.VertexBuffer.Handle, 1, &buffer_copy_info );
+
+    VkBufferMemoryBarrier buffer_memory_barrier = {
+      VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,          // VkStructureType                        sType
+      nullptr,                                          // const void                            *pNext
+      VK_ACCESS_MEMORY_WRITE_BIT,                       // VkAccessFlags                          srcAccessMask
+      VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,              // VkAccessFlags                          dstAccessMask
+      VK_QUEUE_FAMILY_IGNORED,                          // uint32_t                               srcQueueFamilyIndex
+      VK_QUEUE_FAMILY_IGNORED,                          // uint32_t                               dstQueueFamilyIndex
+      Vulkan.VertexBuffer.Handle,                       // VkBuffer                               buffer
+      0,                                                // VkDeviceSize                           offset
+      VK_WHOLE_SIZE                                     // VkDeviceSize                           size
+    };
+    vkCmdPipelineBarrier( command_buffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, 0, 0, nullptr, 1, &buffer_memory_barrier, 0, nullptr );
+
+    vkEndCommandBuffer( command_buffer );
+
+    // Submit command buffer and copy data from staging buffer to a vertex buffer
+    VkSubmitInfo submit_info = {
+      VK_STRUCTURE_TYPE_SUBMIT_INFO,                    // VkStructureType                        sType
+      nullptr,                                          // const void                            *pNext
+      0,                                                // uint32_t                               waitSemaphoreCount
+      nullptr,                                          // const VkSemaphore                     *pWaitSemaphores
+      nullptr,                                          // const VkPipelineStageFlags            *pWaitDstStageMask;
+      1,                                                // uint32_t                               commandBufferCount
+      &command_buffer,                                  // const VkCommandBuffer                 *pCommandBuffers
+      0,                                                // uint32_t                               signalSemaphoreCount
+      nullptr                                           // const VkSemaphore                     *pSignalSemaphores
+    };
+
+    if( vkQueueSubmit( GetGraphicsQueue().Handle, 1, &submit_info, VK_NULL_HANDLE ) != VK_SUCCESS ) {
       return false;
     }
+
+    vkDeviceWaitIdle( GetDevice() );
+
     return true;
   }
 
-  bool Tutorial04::CreateSemaphores() {
-    VkSemaphoreCreateInfo semaphore_create_info = {
-      VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,          // VkStructureType                sType
-      nullptr,                                          // const void*                    pNext
-      0                                                 // VkSemaphoreCreateFlags         flags
-    };
-
-    for( size_t i = 0; i < Vulkan.RenderingResources.size(); ++i ) {
-      if( (vkCreateSemaphore( GetDevice(), &semaphore_create_info, nullptr, &Vulkan.RenderingResources[i].ImageAvailableSemaphore ) != VK_SUCCESS) ||
-        (vkCreateSemaphore( GetDevice(), &semaphore_create_info, nullptr, &Vulkan.RenderingResources[i].FinishedRenderingSemaphore ) != VK_SUCCESS) ) {
-        std::cout << "Could not create semaphores!" << std::endl;
-        return false;
-      }
-    }
-    return true;
-  }
-
-  bool Tutorial04::CreateFences() {
-    VkFenceCreateInfo fence_create_info = {
-      VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,              // VkStructureType                sType
-      nullptr,                                          // const void                    *pNext
-      VK_FENCE_CREATE_SIGNALED_BIT                      // VkFenceCreateFlags             flags
-    };
-
-    for( size_t i = 0; i < Vulkan.RenderingResources.size(); ++i ) {
-      if( vkCreateFence( GetDevice(), &fence_create_info, nullptr, &Vulkan.RenderingResources[i].Fence ) != VK_SUCCESS ) {
-        std::cout << "Could not create a fence!" << std::endl;
-        return false;
-      }
-    }
-    return true;
-  }
-
-  bool Tutorial04::PrepareFrame( VkCommandBuffer command_buffer, const ImageParameters &image_parameters, VkFramebuffer &framebuffer ) {
+  bool Tutorial05::PrepareFrame( VkCommandBuffer command_buffer, const ImageParameters &image_parameters, VkFramebuffer &framebuffer ) {
     if( !CreateFramebuffer( framebuffer, image_parameters.View ) ) {
       return false;
     }
 
     VkCommandBufferBeginInfo command_buffer_begin_info = {
-      VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,        // VkStructureType                        sType
-      nullptr,                                            // const void                            *pNext
-      VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,        // VkCommandBufferUsageFlags              flags
-      nullptr                                             // const VkCommandBufferInheritanceInfo  *pInheritanceInfo
+      VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,      // VkStructureType                        sType
+      nullptr,                                          // const void                            *pNext
+      VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,      // VkCommandBufferUsageFlags              flags
+      nullptr                                           // const VkCommandBufferInheritanceInfo  *pInheritanceInfo
     };
 
     vkBeginCommandBuffer( command_buffer, &command_buffer_begin_info );
 
     VkImageSubresourceRange image_subresource_range = {
-      VK_IMAGE_ASPECT_COLOR_BIT,                          // VkImageAspectFlags                     aspectMask
-      0,                                                  // uint32_t                               baseMipLevel
-      1,                                                  // uint32_t                               levelCount
-      0,                                                  // uint32_t                               baseArrayLayer
-      1                                                   // uint32_t                               layerCount
+      VK_IMAGE_ASPECT_COLOR_BIT,                        // VkImageAspectFlags                     aspectMask
+      0,                                                // uint32_t                               baseMipLevel
+      1,                                                // uint32_t                               levelCount
+      0,                                                // uint32_t                               baseArrayLayer
+      1                                                 // uint32_t                               layerCount
     };
 
     if( GetPresentQueue().Handle != GetGraphicsQueue().Handle ) {
       VkImageMemoryBarrier barrier_from_present_to_draw = {
-        VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,           // VkStructureType                        sType
-        nullptr,                                          // const void                            *pNext
-        VK_ACCESS_MEMORY_READ_BIT,                        // VkAccessFlags                          srcAccessMask
-        VK_ACCESS_MEMORY_READ_BIT,                        // VkAccessFlags                          dstAccessMask
-        VK_IMAGE_LAYOUT_UNDEFINED,                        // VkImageLayout                          oldLayout
-        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,                  // VkImageLayout                          newLayout
-        GetPresentQueue().FamilyIndex,                    // uint32_t                               srcQueueFamilyIndex
-        GetGraphicsQueue().FamilyIndex,                   // uint32_t                               dstQueueFamilyIndex
-        image_parameters.Handle,                          // VkImage                                image
-        image_subresource_range                           // VkImageSubresourceRange                subresourceRange
+        VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,         // VkStructureType                        sType
+        nullptr,                                        // const void                            *pNext
+        VK_ACCESS_MEMORY_READ_BIT,                      // VkAccessFlags                          srcAccessMask
+        VK_ACCESS_MEMORY_READ_BIT,                      // VkAccessFlags                          dstAccessMask
+        VK_IMAGE_LAYOUT_UNDEFINED,                      // VkImageLayout                          oldLayout
+        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,                // VkImageLayout                          newLayout
+        GetPresentQueue().FamilyIndex,                  // uint32_t                               srcQueueFamilyIndex
+        GetGraphicsQueue().FamilyIndex,                 // uint32_t                               dstQueueFamilyIndex
+        image_parameters.Handle,                        // VkImage                                image
+        image_subresource_range                         // VkImageSubresourceRange                subresourceRange
       };
       vkCmdPipelineBarrier( command_buffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier_from_present_to_draw );
     }
 
     VkClearValue clear_value = {
-      { 1.0f, 0.8f, 0.4f, 0.0f },                         // VkClearColorValue                      color
+      { 1.0f, 0.8f, 0.4f, 0.0f },                       // VkClearColorValue                      color
     };
 
     VkRenderPassBeginInfo render_pass_begin_info = {
-      VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,           // VkStructureType                        sType
-      nullptr,                                            // const void                            *pNext
-      Vulkan.RenderPass,                                  // VkRenderPass                           renderPass
-      framebuffer,                                        // VkFramebuffer                          framebuffer
-      {                                                   // VkRect2D                               renderArea
-        {                                                 // VkOffset2D                             offset
-          0,                                                // int32_t                                x
-          0                                                 // int32_t                                y
+      VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,         // VkStructureType                        sType
+      nullptr,                                          // const void                            *pNext
+      Vulkan.RenderPass,                                // VkRenderPass                           renderPass
+      framebuffer,                                      // VkFramebuffer                          framebuffer
+      {                                                 // VkRect2D                               renderArea
+        {                                               // VkOffset2D                             offset
+          0,                                              // int32_t                                x
+          0                                               // int32_t                                y
         },
-        GetSwapChain().Extent,                            // VkExtent2D                             extent;
+        GetSwapChain().Extent,                          // VkExtent2D                             extent;
       },
-      1,                                                  // uint32_t                               clearValueCount
-      &clear_value                                        // const VkClearValue                    *pClearValues
+      1,                                                // uint32_t                               clearValueCount
+      &clear_value                                      // const VkClearValue                    *pClearValues
     };
 
     vkCmdBeginRenderPass( command_buffer, &render_pass_begin_info, VK_SUBPASS_CONTENTS_INLINE );
@@ -574,22 +647,22 @@ namespace ApiWithoutSecrets {
     vkCmdBindPipeline( command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Vulkan.GraphicsPipeline );
 
     VkViewport viewport = {
-      0.0f,                                               // float                                  x
-      0.0f,                                               // float                                  y
-      static_cast<float>(GetSwapChain().Extent.width),    // float                                  width
-      static_cast<float>(GetSwapChain().Extent.height),   // float                                  height
-      0.0f,                                               // float                                  minDepth
-      1.0f                                                // float                                  maxDepth
+      0.0f,                                             // float                                  x
+      0.0f,                                             // float                                  y
+      static_cast<float>(GetSwapChain().Extent.width),  // float                                  width
+      static_cast<float>(GetSwapChain().Extent.height), // float                                  height
+      0.0f,                                             // float                                  minDepth
+      1.0f                                              // float                                  maxDepth
     };
 
     VkRect2D scissor = {
-      {                                                   // VkOffset2D                             offset
-        0,                                                  // int32_t                                x
-        0                                                   // int32_t                                y
+      {                                                 // VkOffset2D                             offset
+        0,                                                // int32_t                                x
+        0                                                 // int32_t                                y
       },
-      {                                                   // VkExtent2D                             extent
-        GetSwapChain().Extent.width,                        // uint32_t                               width
-        GetSwapChain().Extent.height                        // uint32_t                               height
+      {                                                 // VkExtent2D                             extent
+        GetSwapChain().Extent.width,                      // uint32_t                               width
+        GetSwapChain().Extent.height                      // uint32_t                               height
       }
     };
 
@@ -605,16 +678,16 @@ namespace ApiWithoutSecrets {
 
     if( GetGraphicsQueue().Handle != GetPresentQueue().Handle ) {
       VkImageMemoryBarrier barrier_from_draw_to_present = {
-        VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,           // VkStructureType                        sType
-        nullptr,                                          // const void                            *pNext
-        VK_ACCESS_MEMORY_READ_BIT,                        // VkAccessFlags                          srcAccessMask
-        VK_ACCESS_MEMORY_READ_BIT,                        // VkAccessFlags                          dstAccessMask
-        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,                  // VkImageLayout                          oldLayout
-        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,                  // VkImageLayout                          newLayout
-        GetGraphicsQueue().FamilyIndex,                   // uint32_t                               srcQueueFamilyIndex
-        GetPresentQueue().FamilyIndex,                    // uint32_t                               dstQueueFamilyIndex
-        image_parameters.Handle,                          // VkImage                                image
-        image_subresource_range                           // VkImageSubresourceRange                subresourceRange
+        VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,         // VkStructureType                        sType
+        nullptr,                                        // const void                            *pNext
+        VK_ACCESS_MEMORY_READ_BIT,                      // VkAccessFlags                          srcAccessMask
+        VK_ACCESS_MEMORY_READ_BIT,                      // VkAccessFlags                          dstAccessMask
+        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,                // VkImageLayout                          oldLayout
+        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,                // VkImageLayout                          newLayout
+        GetGraphicsQueue().FamilyIndex,                 // uint32_t                               srcQueueFamilyIndex
+        GetPresentQueue().FamilyIndex,                  // uint32_t                               dstQueueFamilyIndex
+        image_parameters.Handle,                        // VkImage                                image
+        image_subresource_range                         // VkImageSubresourceRange                subresourceRange
       };
       vkCmdPipelineBarrier( command_buffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier_from_draw_to_present );
     }
@@ -626,22 +699,22 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial04::CreateFramebuffer( VkFramebuffer &framebuffer, VkImageView image_view ) {
+  bool Tutorial05::CreateFramebuffer( VkFramebuffer &framebuffer, VkImageView image_view ) {
     if( framebuffer != VK_NULL_HANDLE ) {
       vkDestroyFramebuffer( GetDevice(), framebuffer, nullptr );
       framebuffer = VK_NULL_HANDLE;
     }
 
     VkFramebufferCreateInfo framebuffer_create_info = {
-      VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,      // VkStructureType                sType
-      nullptr,                                        // const void                    *pNext
-      0,                                              // VkFramebufferCreateFlags       flags
-      Vulkan.RenderPass,                              // VkRenderPass                   renderPass
-      1,                                              // uint32_t                       attachmentCount
-      &image_view,                                    // const VkImageView             *pAttachments
-      GetSwapChain().Extent.width,                    // uint32_t                       width
-      GetSwapChain().Extent.height,                   // uint32_t                       height
-      1                                               // uint32_t                       layers
+      VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,        // VkStructureType                sType
+      nullptr,                                          // const void                    *pNext
+      0,                                                // VkFramebufferCreateFlags       flags
+      Vulkan.RenderPass,                                // VkRenderPass                   renderPass
+      1,                                                // uint32_t                       attachmentCount
+      &image_view,                                      // const VkImageView             *pAttachments
+      GetSwapChain().Extent.width,                      // uint32_t                       width
+      GetSwapChain().Extent.height,                     // uint32_t                       height
+      1                                                 // uint32_t                       layers
     };
 
     if( vkCreateFramebuffer( GetDevice(), &framebuffer_create_info, nullptr, &framebuffer ) != VK_SUCCESS ) {
@@ -652,17 +725,17 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  bool Tutorial04::ChildOnWindowSizeChanged() {
+  bool Tutorial05::ChildOnWindowSizeChanged() {
     return true;
   }
 
-  bool Tutorial04::Draw() {
+  bool Tutorial05::Draw() {
     static size_t           resource_index = 0;
     RenderingResourcesData &current_rendering_resource = Vulkan.RenderingResources[resource_index];
     VkSwapchainKHR          swap_chain = GetSwapChain().Handle;
     uint32_t                image_index;
 
-    resource_index = (resource_index + 1) % VulkanTutorial04Parameters::ResourcesCount;
+    resource_index = (resource_index + 1) % VulkanTutorial05Parameters::ResourcesCount;
 
     if( vkWaitForFences( GetDevice(), 1, &current_rendering_resource.Fence, VK_FALSE, 1000000000 ) != VK_SUCCESS ) {
       std::cout << "Waiting for fence takes too long!" << std::endl;
@@ -729,12 +802,26 @@ namespace ApiWithoutSecrets {
     return true;
   }
 
-  void Tutorial04::ChildClear() {
+  void Tutorial05::ChildClear() {
   }
 
-  Tutorial04::~Tutorial04() {
+  Tutorial05::~Tutorial05() {
     if( GetDevice() != VK_NULL_HANDLE ) {
       vkDeviceWaitIdle( GetDevice() );
+
+      DestroyBuffer( Vulkan.VertexBuffer );
+
+      DestroyBuffer( Vulkan.StagingBuffer );
+
+      if( Vulkan.GraphicsPipeline != VK_NULL_HANDLE ) {
+        vkDestroyPipeline( GetDevice(), Vulkan.GraphicsPipeline, nullptr );
+        Vulkan.GraphicsPipeline = VK_NULL_HANDLE;
+      }
+
+      if( Vulkan.RenderPass != VK_NULL_HANDLE ) {
+        vkDestroyRenderPass( GetDevice(), Vulkan.RenderPass, nullptr );
+        Vulkan.RenderPass = VK_NULL_HANDLE;
+      }
 
       for( size_t i = 0; i < Vulkan.RenderingResources.size(); ++i ) {
         if( Vulkan.RenderingResources[i].Framebuffer != VK_NULL_HANDLE ) {
@@ -758,26 +845,18 @@ namespace ApiWithoutSecrets {
         vkDestroyCommandPool( GetDevice(), Vulkan.CommandPool, nullptr );
         Vulkan.CommandPool = VK_NULL_HANDLE;
       }
+    }
+  }
 
-      if( Vulkan.VertexBuffer.Handle != VK_NULL_HANDLE ) {
-        vkDestroyBuffer( GetDevice(), Vulkan.VertexBuffer.Handle, nullptr );
-        Vulkan.VertexBuffer.Handle = VK_NULL_HANDLE;
-      }
+  void Tutorial05::DestroyBuffer( BufferParameters& buffer ) {
+    if( buffer.Handle != VK_NULL_HANDLE ) {
+      vkDestroyBuffer( GetDevice(), buffer.Handle, nullptr );
+      buffer.Handle = VK_NULL_HANDLE;
+    }
 
-      if( Vulkan.VertexBuffer.Memory != VK_NULL_HANDLE ) {
-        vkFreeMemory( GetDevice(), Vulkan.VertexBuffer.Memory, nullptr );
-        Vulkan.VertexBuffer.Memory = VK_NULL_HANDLE;
-      }
-
-      if( Vulkan.GraphicsPipeline != VK_NULL_HANDLE ) {
-        vkDestroyPipeline( GetDevice(), Vulkan.GraphicsPipeline, nullptr );
-        Vulkan.GraphicsPipeline = VK_NULL_HANDLE;
-      }
-
-      if( Vulkan.RenderPass != VK_NULL_HANDLE ) {
-        vkDestroyRenderPass( GetDevice(), Vulkan.RenderPass, nullptr );
-        Vulkan.RenderPass = VK_NULL_HANDLE;
-      }
+    if( buffer.Memory != VK_NULL_HANDLE ) {
+      vkFreeMemory( GetDevice(), buffer.Memory, nullptr );
+      buffer.Memory = VK_NULL_HANDLE;
     }
   }
 

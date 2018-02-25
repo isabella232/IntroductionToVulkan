@@ -51,15 +51,17 @@ if( CMAKE_BUILD_TYPE STREQUAL "debug" )
 	add_definitions(-D_DEBUG)
 endif()
 
-macro( add_executable _number _name )
+macro( add_executable _type _number _name )
 	set( TARGET_NAME "${_number}-${_name}" )
-	_add_executable( ${TARGET_NAME} ${ARGN} )
+	file( GLOB PROJECT_FILES "${CMAKE_CURRENT_LIST_DIR}/${_type}/${_number}/*.*" )
+	_add_executable( ${TARGET_NAME} ${ARGN} ${PROJECT_FILES} )
 	target_compile_definitions( ${TARGET_NAME} PRIVATE USE_SWAPCHAIN_EXTENSIONS )
 	target_link_libraries( ${TARGET_NAME} ${PLATFORM_LIBRARY} )
-	set_property( TARGET ${TARGET_NAME} PROPERTY FOLDER "Tutorials" )
+	set_property( TARGET ${TARGET_NAME} PROPERTY FOLDER "${_type}" )
 
-	if( EXISTS "${CMAKE_SOURCE_DIR}/Tutorial${_number}/Data${_number}/" )
-		file( COPY "${CMAKE_SOURCE_DIR}/Tutorial${_number}/Data${_number}/" DESTINATION "${CMAKE_SOURCE_DIR}/build/Data${_number}" )
+	if( EXISTS "${CMAKE_SOURCE_DIR}/${_type}/${_number}/Data" )
+		file( GLOB DATA_FILES "${CMAKE_SOURCE_DIR}/${_type}/${_number}/Data/*.*" )
+		file( COPY ${DATA_FILES} DESTINATION "${CMAKE_SOURCE_DIR}/build/Data/${_type}/${_number}/" )
 	endif()
 endmacro()
 
@@ -114,46 +116,21 @@ source_group( "Source Files\\Common" FILES ${ADVANCED_SHARED_SOURCE_FILES} )
 source_group( "Header Files" FILES ${TUTORIAL_HEADER_FILES} )
 source_group( "Source Files" FILES ${TUTORIAL_SOURCE_FILES} )
 
-_add_executable( "01-The_Beginning"
-	${ALL_BASIC_SHARED_FILES}
-	Tutorial01/Tutorial01.h
-	Tutorial01/main.cpp
-	Tutorial01/Tutorial01.cpp )
+_add_executable( "01-The_Beginning" ${ALL_BASIC_SHARED_FILES}
+	Tutorials/01/Tutorial01.h
+	Tutorials/01/main.cpp
+	Tutorials/01/Tutorial01.cpp )
 	target_link_libraries( "01-The_Beginning" ${PLATFORM_LIBRARY} )
 	set_property( TARGET "01-The_Beginning" PROPERTY FOLDER "Tutorials" )
 
-add_executable( "02" "Swapchain"
-	${ALL_BASIC_SHARED_FILES}
-	Tutorial02/Tutorial02.h
-	Tutorial02/main.cpp
-	Tutorial02/Tutorial02.cpp )
+add_executable( "Tutorials" "02" "Swapchain" ${ALL_BASIC_SHARED_FILES} )
 
-add_executable( "03" "First_Triangle"
-	${ALL_BASIC_AND_ADVANCED_SHARED_FILES}
-	Tutorial03/Tutorial03.h
-	Tutorial03/main.cpp
-	Tutorial03/Tutorial03.cpp )
+add_executable( "Tutorials" "03" "First_Triangle" ${ALL_BASIC_AND_ADVANCED_SHARED_FILES} )
 
-add_executable( "04" "Vertex_Attributes"
-	${ALL_BASIC_AND_ADVANCED_SHARED_FILES}
-	Tutorial04/Tutorial04.h
-	Tutorial04/main.cpp
-	Tutorial04/Tutorial04.cpp )
-	
-add_executable( "05" "Staging_Resources"
-	${ALL_BASIC_AND_ADVANCED_SHARED_FILES}
-	Tutorial05/Tutorial05.h
-	Tutorial05/main.cpp
-	Tutorial05/Tutorial05.cpp )
+add_executable( "Tutorials" "04" "Vertex_Attributes" ${ALL_BASIC_AND_ADVANCED_SHARED_FILES} )
 
-add_executable( "06" "Descriptor_Sets"
-	${ALL_BASIC_AND_ADVANCED_SHARED_FILES}
-	Tutorial06/Tutorial06.h
-	Tutorial06/main.cpp
-	Tutorial06/Tutorial06.cpp )
+add_executable( "Tutorials" "05" "Staging_Resources" ${ALL_BASIC_AND_ADVANCED_SHARED_FILES} )
 
-add_executable( "07" "Uniform_Buffers"
-	${ALL_BASIC_AND_ADVANCED_SHARED_FILES}
-	Tutorial07/Tutorial07.h
-	Tutorial07/main.cpp
-	Tutorial07/Tutorial07.cpp )
+add_executable( "Tutorials" "06" "Descriptor_Sets" ${ALL_BASIC_AND_ADVANCED_SHARED_FILES} )
+
+add_executable( "Tutorials" "07" "Uniform_Buffers" ${ALL_BASIC_AND_ADVANCED_SHARED_FILES} )
