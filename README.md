@@ -13,7 +13,7 @@ Vulkan drivers and other related resources can be found at https://www.khronos.o
 
 ## Tutorials:
 
-### [01 - The Beginning](./Project/Tutorial01/)
+### [01 - The Beginning](./Project/Tutorials/01/)
 <img src="./Document/Images/01 - The Beginning.png" height="96px" align="right">
 
 #### Introduction to a Vulkan world
@@ -23,7 +23,7 @@ Tutorial presents how to create all resources necessary to use Vulkan inside our
 
 <hr>
 
-### [02 - Swap chain](./Project/Tutorial02/)
+### [02 - Swap chain](./Project/Tutorials/02/)
 <img src="./Document/Images/02 - Swap Chain.png" height="96px" align="right">
 
 #### Integrating Vulkan with OS
@@ -33,7 +33,7 @@ This lesson focuses on a swap chain creation. Swap chain enables us to display V
 
 <hr>
 
-### [03 - First triangle](./Project/Tutorial03/)
+### [03 - First triangle](./Project/Tutorials/03/)
 <img src="./Document/Images/03 - First Triangle.png" height="96px" align="right">
 
 #### Graphics pipeline and drawing
@@ -43,7 +43,7 @@ Here I present render pass, framebuffer and pipeline objects which are necessary
 
 <hr>
 
-### [04 - Vertex Attributes](./Project/Tutorial04/)
+### [04 - Vertex Attributes](./Project/Tutorials/04/)
 <img src="./Document/Images/04 - Vertex Attributes.png" height="96px" align="right">
 
 #### Buffers, memory objects and fences
@@ -53,7 +53,7 @@ This tutorial shows how to set up vertex attributes and bind buffer with a verte
 
 <hr>
 
-### [05 - Staging Resources](./Project/Tutorial05/)
+### [05 - Staging Resources](./Project/Tutorials/05/)
 <img src="./Document/Images/05 - Staging Resources.png" height="96px" align="right">
 
 #### Copying data between buffers
@@ -63,7 +63,7 @@ In this example staging resources are presented. They are used as an intermediat
 
 <hr>
 
-### [06 - Descriptor Sets](./Project/Tutorial06/)
+### [06 - Descriptor Sets](./Project/Tutorials/06/)
 <img src="./Document/Images/06 - Descriptor Sets.png" height="96px" align="right">
 
 #### Using textures in shaders
@@ -73,7 +73,7 @@ This tutorial shows what resources are needed and how they should be prepared to
 
 <hr>
 
-### [07 - Uniform Buffers](./Project/Tutorial07/)
+### [07 - Uniform Buffers](./Project/Tutorials/07/)
 <img src="./Document/Images/07 - Uniform Buffers.png" height="96px" align="right">
 
 #### Using buffers in shaders
