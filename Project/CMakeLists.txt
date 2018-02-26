@@ -1,4 +1,4 @@
-# /////////////////////////////////////////////////////////////////////////////////////////////
+	# /////////////////////////////////////////////////////////////////////////////////////////////
 # // Copyright 2017 Intel Corporation
 # //
 # // Licensed under the Apache License, Version 2.0 (the "License");
@@ -67,33 +67,33 @@ endmacro()
 
 add_definitions( -DVK_NO_PROTOTYPES )
 add_definitions( -D${USE_PLATFORM} )
-include_directories( Include )
-include_directories( Common )
+include_directories( "External" )
+include_directories( "Common" )
 
-set( BASIC_SHARED_HEADER_FILES
+file( GLOB BASIC_SHARED_HEADER_FILES
 		"Common/OperatingSystem.h"
 		"Common/ListOfFunctions.inl"
 		"Common/VulkanFunctions.h" )
 
-set( BASIC_SHARED_SOURCE_FILES
+file( GLOB BASIC_SHARED_SOURCE_FILES
 		"Common/OperatingSystem.cpp"
 		"Common/VulkanFunctions.cpp" )
 
-set( EXTERNAL_HEADER_FILES
-		"Include/vk_platform.h"
-		"Include/vulkan.h"
-		"Include/stb_image.h" )
+file( GLOB EXTERNAL_HEADER_FILES
+		"External/vk_platform.h"
+		"External/vulkan.h"
+		"External/stb_image.h" )
 
 set( ALL_BASIC_SHARED_FILES
 		${BASIC_SHARED_HEADER_FILES}
 		${BASIC_SHARED_SOURCE_FILES}
 		${EXTERNAL_HEADER_FILES} )
 
-set( ADVANCED_SHARED_HEADER_FILES
+file( GLOB ADVANCED_SHARED_HEADER_FILES
 		"Common/Tools.h"
 		"Common/VulkanCommon.h" )
 
-set( ADVANCED_SHARED_SOURCE_FILES
+file( GLOB ADVANCED_SHARED_SOURCE_FILES
 		"Common/Tools.cpp"
 		"Common/VulkanCommon.cpp" )
 
@@ -102,19 +102,19 @@ set( ALL_BASIC_AND_ADVANCED_SHARED_FILES
 		${ADVANCED_SHARED_HEADER_FILES}
 		${ADVANCED_SHARED_SOURCE_FILES} )
 
-set( TUTORIAL_HEADER_FILES REGULAR_EXPRESSION
-		"Tutorial.*h" )
+set( PROJECT_HEADER_FILES REGULAR_EXPRESSION
+		"(Tutorial|Benchmark)[0-9]+[.]h" )
 
-set( TUTORIAL_SOURCE_FILES REGULAR_EXPRESSION
-		"Tutorial.*cpp" )
+set( PROJECT_SOURCE_FILES REGULAR_EXPRESSION
+		"(Tutorial|Benchmark)[0-9]+[.]cpp" )
 
 source_group( "Header Files\\Common" FILES ${BASIC_SHARED_HEADER_FILES} )
 source_group( "Source Files\\Common" FILES ${BASIC_SHARED_SOURCE_FILES} )
-source_group( "Header Files\\Include" FILES ${EXTERNAL_HEADER_FILES} )
+source_group( "Header Files\\External" FILES ${EXTERNAL_HEADER_FILES} )
 source_group( "Header Files\\Common" FILES ${ADVANCED_SHARED_HEADER_FILES} )
 source_group( "Source Files\\Common" FILES ${ADVANCED_SHARED_SOURCE_FILES} )
-source_group( "Header Files" FILES ${TUTORIAL_HEADER_FILES} )
-source_group( "Source Files" FILES ${TUTORIAL_SOURCE_FILES} )
+source_group( "Header Files" FILES ${PROJECT_HEADER_FILES} )
+source_group( "Source Files" FILES ${PROJECT_SOURCE_FILES} )
 
 _add_executable( "01-The_Beginning" ${ALL_BASIC_SHARED_FILES}
 	Tutorials/01/Tutorial01.h
