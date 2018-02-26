@@ -55,11 +55,11 @@ namespace ApiWithoutSecrets {
 #endif
 
     // ************************************************************ //
-    // OnWindowSizeChanged                                          //
+    // ProjectBase                                                  //
     //                                                              //
-    // Base class for handling window size changes                  //
+    // Base class for handling window size changes and drawing      //
     // ************************************************************ //
-    class TutorialBase {
+    class ProjectBase {
     public:
       virtual bool OnWindowSizeChanged() = 0;
       virtual bool Draw() = 0;
@@ -68,11 +68,11 @@ namespace ApiWithoutSecrets {
         return CanRender;
       }
 
-      TutorialBase() :
+      ProjectBase() :
         CanRender( false ) {
       }
 
-      virtual ~TutorialBase() {
+      virtual ~ProjectBase() {
       }
 
     protected:
@@ -126,7 +126,7 @@ namespace ApiWithoutSecrets {
       ~Window();
 
       bool              Create( const char *title );
-      bool              RenderingLoop( TutorialBase &tutorial ) const;
+      bool              RenderingLoop( ProjectBase &project ) const;
       WindowParameters  GetParameters() const;
 
     private:

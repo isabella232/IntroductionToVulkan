@@ -106,7 +106,7 @@ namespace ApiWithoutSecrets {
   //                                                              //
   // Base class for Vulkan more advanced tutorial classes         //
   // ************************************************************ //
-  class VulkanCommon : public OS::TutorialBase {
+  class VulkanCommon : public OS::ProjectBase {
   public:
     VulkanCommon();
     virtual ~VulkanCommon();

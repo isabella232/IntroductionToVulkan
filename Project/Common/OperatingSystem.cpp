@@ -32,7 +32,7 @@ namespace ApiWithoutSecrets {
 
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 
-#define TUTORIAL_NAME "API without Secrets: Introduction to Vulkan"
+#define SERIES_NAME "API without Secrets: Introduction to Vulkan"
 
     LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam ) {
       switch( message ) {
@@ -56,7 +56,7 @@ namespace ApiWithoutSecrets {
       }
 
       if( Parameters.Instance ) {
-        UnregisterClass( TUTORIAL_NAME, Parameters.Instance );
+        UnregisterClass( SERIES_NAME, Parameters.Instance );
       }
     }
 
@@ -77,7 +77,7 @@ namespace ApiWithoutSecrets {
       wcex.hCursor = LoadCursor( NULL, IDC_ARROW );
       wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
       wcex.lpszMenuName = NULL;
-      wcex.lpszClassName = TUTORIAL_NAME;
+      wcex.lpszClassName = SERIES_NAME;
       wcex.hIconSm = NULL;
 
       if( !RegisterClassEx( &wcex ) ) {
@@ -85,7 +85,7 @@ namespace ApiWithoutSecrets {
       }
 
       // Create window
-      Parameters.Handle = CreateWindow( TUTORIAL_NAME, title, WS_OVERLAPPEDWINDOW, 20, 20, 500, 500, nullptr, nullptr, Parameters.Instance, nullptr );
+      Parameters.Handle = CreateWindow( SERIES_NAME, title, WS_OVERLAPPEDWINDOW, 20, 20, 500, 500, nullptr, nullptr, Parameters.Instance, nullptr );
       if( !Parameters.Handle ) {
         return false;
       }
@@ -93,7 +93,7 @@ namespace ApiWithoutSecrets {
       return true;
     }
 
-    bool Window::RenderingLoop( TutorialBase &tutorial ) const {
+    bool Window::RenderingLoop( ProjectBase &project ) const {
       // Display window
       ShowWindow( Parameters.Handle, SW_SHOWNORMAL );
       UpdateWindow( Parameters.Handle );
@@ -123,13 +123,13 @@ namespace ApiWithoutSecrets {
           // Draw
           if( resize ) {
             resize = false;
-            if( !tutorial.OnWindowSizeChanged() ) {
+            if( !project.OnWindowSizeChanged() ) {
               result = false;
               break;
             }
           }
-          if( tutorial.ReadyToDraw() ) {
-            if( !tutorial.Draw() ) {
+          if( project.ReadyToDraw() ) {
+            if( !project.Draw() ) {
               result = false;
               break;
             }
@@ -203,7 +203,7 @@ namespace ApiWithoutSecrets {
       return true;
     }
 
-    bool Window::RenderingLoop( TutorialBase &tutorial ) const {
+    bool Window::RenderingLoop( ProjectBase &project ) const {
       // Prepare notification for window destruction
       xcb_intern_atom_cookie_t  protocols_cookie = xcb_intern_atom( Parameters.Connection, 1, 12, "WM_PROTOCOLS" );
       xcb_intern_atom_reply_t  *protocols_reply  = xcb_intern_atom_reply( Parameters.Connection, protocols_cookie, 0 );
@@ -258,13 +258,13 @@ namespace ApiWithoutSecrets {
           // Draw
           if( resize ) {
             resize = false;
-            if( !tutorial.OnWindowSizeChanged() ) {
+            if( !project.OnWindowSizeChanged() ) {
               result = false;
               break;
             }
           }
-          if( tutorial.ReadyToDraw() ) {
-            if( !tutorial.Draw() ) {
+          if( project.ReadyToDraw() ) {
+            if( !project.Draw() ) {
               result = false;
               break;
             }
@@ -310,7 +310,7 @@ namespace ApiWithoutSecrets {
       return true;
     }
 
-    bool Window::RenderingLoop( TutorialBase &tutorial ) const {
+    bool Window::RenderingLoop( ProjectBase &project ) const {
       // Prepare notification for window destruction
       Atom delete_window_atom;
       delete_window_atom = XInternAtom( Parameters.DisplayPtr, "WM_DELETE_WINDOW", false );
@@ -359,13 +359,13 @@ namespace ApiWithoutSecrets {
           // Draw
           if( resize ) {
             resize = false;
-            if( !tutorial.OnWindowSizeChanged() ) {
+            if( !project.OnWindowSizeChanged() ) {
               result = false;
               break;
             }
           }
-          if( tutorial.ReadyToDraw() ) {
-            if( !tutorial.Draw() ) {
+          if( project.ReadyToDraw() ) {
+            if( !project.Draw() ) {
               result = false;
               break;
             }

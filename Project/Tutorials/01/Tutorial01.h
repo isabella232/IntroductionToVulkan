@@ -46,7 +46,7 @@ namespace ApiWithoutSecrets {
   //                                                              //
   // Class for presenting Vulkan usage topics                     //
   // ************************************************************ //
-  class Tutorial01 : public OS::TutorialBase {
+  class Tutorial01 : public OS::ProjectBase {
   public:
     Tutorial01();
     ~Tutorial01();
