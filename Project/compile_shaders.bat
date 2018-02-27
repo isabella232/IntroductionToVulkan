@@ -8,8 +8,8 @@ REM // Licensed under the Apache License, Version 2.0 (the "License");REM // yo
 REM /////////////////////////////////////////////////////////////////////////////////////////////
 
 if [%1] == [] (
-    echo No arguments provided! Please specify folder number.
-    echo Example usage: compile_shaders.bat 03
+    echo No arguments provided! Please specify subfolder and number.
+    echo Example usage: compile_shaders.bat Tutorials\03
     goto end
 )
 
@@ -26,15 +26,27 @@ goto end
 
 :convert
 
-set folder=Tutorial%1/Data%1
-echo Converting GLSL shaders into SPIR-V assembly in the "%folder%" folder.
+set folder=%1\Data
 
-if exist %folder%/shader.vert (
-    glslangValidator.exe -V -H -o %folder%/vert.spv %folder%/shader.vert > %folder%/vert.spv.txt
+if not exist %folder% (
+    echo Could not find specified folder.
+    goto end
 )
 
-if exist %folder%/shader.frag (
-    glslangValidator.exe -V -H -o %folder%/frag.spv %folder%/shader.frag > %folder%/frag.spv.txt
+if exist %folder%\shader.vert (
+    echo Converting the following shader file: %folder%\shader.vert
+    glslangValidator.exe -V -H -o %folder%\vert.spv %folder%\shader.vert > %folder%\vert.spv.txt
+)
+
+if exist %folder%\shader.frag (
+    echo Converting the following shader file: %folder%\shader.frag
+    glslangValidator.exe -V -H -o %folder%\frag.spv %folder%\shader.frag > %folder%\frag.spv.txt
+)
+
+set target=build\Data\%1
+if exist %target% (
+    echo Copying files to %target%:
+    copy /Y %folder%\*.* %target%
 )
 
 :end
