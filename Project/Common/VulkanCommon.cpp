@@ -612,7 +612,7 @@ namespace ApiWithoutSecrets {
     // Set of images defined in a swap chain may not always be available for application to render to:
     // One may be displayed and one may wait in a queue to be presented
     // If application wants to use more images at the same time it must ask for more images
-    uint32_t image_count = surface_capabilities.minImageCount + 1;
+    uint32_t image_count = surface_capabilities.minImageCount + 2;
     if( (surface_capabilities.maxImageCount > 0) &&
         (image_count > surface_capabilities.maxImageCount) ) {
       image_count = surface_capabilities.maxImageCount;
@@ -699,13 +699,20 @@ namespace ApiWithoutSecrets {
   }
 
   VkPresentModeKHR VulkanCommon::GetSwapChainPresentMode( std::vector<VkPresentModeKHR> &present_modes ) {
-    // FIFO present mode is always available
     // MAILBOX is the lowest latency V-Sync enabled mode (something like triple-buffering) so use it if available
     for( VkPresentModeKHR &present_mode : present_modes ) {
       if( present_mode == VK_PRESENT_MODE_MAILBOX_KHR ) {
         return present_mode;
       }
     }
+    // IMMEDIATE mode allows us to display frames in a V-Sync independent manner so it can introduce screen tearing
+    // But this mode is the best for benchmarking purposes if we want to check the real number of FPS
+    for( VkPresentModeKHR &present_mode : present_modes ) {
+      if( present_mode == VK_PRESENT_MODE_IMMEDIATE_KHR ) {
+        return present_mode;
+      }
+    }
+    // FIFO present mode is always available
     for( VkPresentModeKHR &present_mode : present_modes ) {
       if( present_mode == VK_PRESENT_MODE_FIFO_KHR ) {
         return present_mode;

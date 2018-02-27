@@ -19,8 +19,7 @@
 
 namespace ApiWithoutSecrets {
 
-  Tutorial03::Tutorial03() :
-    Vulkan() {
+  Tutorial03::Tutorial03() {
   }
 
   bool Tutorial03::CreateRenderPass() {

@@ -23,23 +23,6 @@
 namespace ApiWithoutSecrets {
 
   // ************************************************************ //
-  // BufferParameters                                             //
-  //                                                              //
-  // Vulkan Buffer's parameters container class                   //
-  // ************************************************************ //
-  struct BufferParameters {
-    VkBuffer                        Handle;
-    VkDeviceMemory                  Memory;
-    uint32_t                        Size;
-
-    BufferParameters() :
-      Handle( VK_NULL_HANDLE ),
-      Memory( VK_NULL_HANDLE ),
-      Size( 0 ) {
-    }
-  };
-
-  // ************************************************************ //
   // VertexData                                                   //
   //                                                              //
   // Struct describing data type and format of vertex attributes  //

@@ -19,8 +19,7 @@
 
 namespace ApiWithoutSecrets {
 
-  Tutorial05::Tutorial05() :
-    Vulkan() {
+  Tutorial05::Tutorial05() {
   }
 
   bool Tutorial05::CreateRenderingResources() {

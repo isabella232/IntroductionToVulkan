@@ -58,6 +58,40 @@ namespace ApiWithoutSecrets {
   };
 
   // ************************************************************ //
+  // BufferParameters                                             //
+  //                                                              //
+  // Vulkan Buffer's parameters container class                   //
+  // ************************************************************ //
+  struct BufferParameters {
+    VkBuffer                        Handle;
+    VkDeviceMemory                  Memory;
+    uint32_t                        Size;
+
+    BufferParameters() :
+      Handle( VK_NULL_HANDLE ),
+      Memory( VK_NULL_HANDLE ),
+      Size( 0 ) {
+    }
+  };
+
+  // ************************************************************ //
+  // DescriptorParameters                                         //
+  //                                                              //
+  // Container class for descriptor related resources             //
+  // ************************************************************ //
+  struct DescriptorSetParameters {
+    VkDescriptorPool                Pool;
+    VkDescriptorSetLayout           Layout;
+    VkDescriptorSet                 Handle;
+
+    DescriptorSetParameters() :
+      Pool( VK_NULL_HANDLE ),
+      Layout( VK_NULL_HANDLE ),
+      Handle( VK_NULL_HANDLE ) {
+    }
+  };
+
+  // ************************************************************ //
   // SwapChainParameters                                          //
   //                                                              //
   // Vulkan SwapChain's parameters container class                //
