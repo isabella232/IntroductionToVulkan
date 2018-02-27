@@ -10,7 +10,7 @@
 # Intel does not assume any responsibility for any errors which may appear in this software
 # nor any responsibility to update it.
 
-folder=Tutorial$1/Data$1
+folder=$1/Data
 
 function convert {
   if [ -f "./$folder/shader.$1" ]; then
@@ -20,8 +20,8 @@ function convert {
 }
 
 if [ "$1" == "" ]; then
-  echo "No arguments provided! Please specify folder number."
-  echo "Example usage: source compile_shaders.sh 03"
+  echo "No arguments provided! Please specify subfolder and number."
+  echo "Example usage: source compile_shaders.sh Tutorials/03"
 else
   echo "Converting GLSL shaders into SPIR-V assembly in the '$folder' folder."
   convert vert
