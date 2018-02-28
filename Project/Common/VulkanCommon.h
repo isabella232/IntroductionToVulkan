@@ -148,7 +148,6 @@ namespace ApiWithoutSecrets {
     bool                          PrepareVulkan( OS::WindowParameters parameters );
     virtual bool                  OnWindowSizeChanged() final override;
 
-  protected:
     VkPhysicalDevice              GetPhysicalDevice() const;
     VkDevice                      GetDevice() const;
 

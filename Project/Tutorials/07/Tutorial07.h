@@ -75,6 +75,7 @@ namespace ApiWithoutSecrets {
     VulkanTutorial07Parameters() :
       RenderPass( VK_NULL_HANDLE ),
       Image(),
+      UniformBuffer(),
       DescriptorSet(),
       PipelineLayout(),
       GraphicsPipeline( VK_NULL_HANDLE ),

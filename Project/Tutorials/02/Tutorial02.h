@@ -54,7 +54,9 @@ namespace ApiWithoutSecrets {
       PresentationSurface( VK_NULL_HANDLE ),
       SwapChain( VK_NULL_HANDLE ),
       PresentQueueCmdBuffers( 0 ),
-      PresentQueueCmdPool( VK_NULL_HANDLE ) {
+      PresentQueueCmdPool( VK_NULL_HANDLE ),
+      ImageAvailableSemaphore( VK_NULL_HANDLE ),
+      RenderingFinishedSemaphore( VK_NULL_HANDLE ) {
     }
   };
 

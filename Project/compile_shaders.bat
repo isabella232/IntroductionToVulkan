@@ -8,8 +8,14 @@ REM // Licensed under the Apache License, Version 2.0 (the "License");REM // yo
 REM /////////////////////////////////////////////////////////////////////////////////////////////
 
 if [%1] == [] (
-    echo No arguments provided! Please specify subfolder and number.
-    echo Example usage: compile_shaders.bat Tutorials\03
+    echo Folder not provided! Please specify folder and shader file name without extension
+    echo Example usage: compile_shaders.bat Tutorials\03 shader
+    goto end
+)
+
+if [%2] == [] (
+    echo Shader name not provided! Please specify folder name and shader file name without extension
+    echo Example usage: compile_shaders.bat Tutorials\03 shader
     goto end
 )
 
@@ -33,14 +39,14 @@ if not exist %folder% (
     goto end
 )
 
-if exist %folder%\shader.vert (
-    echo Converting the following shader file: %folder%\shader.vert
-    glslangValidator.exe -V -H -o %folder%\vert.spv %folder%\shader.vert > %folder%\vert.spv.txt
+if exist %folder%\%2.vert (
+    echo Converting the following shader file: %folder%\%2.vert
+    glslangValidator.exe -V -H -o %folder%\%2.vert.spv %folder%\%2.vert > %folder%\%2.vert.spv.txt
 )
 
-if exist %folder%\shader.frag (
-    echo Converting the following shader file: %folder%\shader.frag
-    glslangValidator.exe -V -H -o %folder%\frag.spv %folder%\shader.frag > %folder%\frag.spv.txt
+if exist %folder%\%2.frag (
+    echo Converting the following shader file: %folder%\%2.frag
+    glslangValidator.exe -V -H -o %folder%\%2.frag.spv %folder%\%2.frag > %folder%\%2.frag.spv.txt
 )
 
 set target=build\Data\%1
