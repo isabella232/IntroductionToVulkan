@@ -77,5 +77,6 @@ This tutorial shows what resources are needed and how they should be prepared to
 <img src="./Document/Images/07 - Uniform Buffers.png" height="96px" align="right">
 
 #### Using buffers in shaders
+##### https://software.intel.com/en-us/articles/api-without-secrets-introduction-to-vulkan-part-7
 
 Here it is shown how to add uniform buffer to descriptor sets, how to provide data for projection matrix through it and how to use it inside shader.
