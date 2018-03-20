@@ -210,7 +210,7 @@ namespace ApiWithoutSecrets {
       return false;
     }
 
-    if( !CopyTextureData( &texture_data[0], data_size, width, height ) ) {
+    if( !CopyTextureData( texture_data.data(), data_size, width, height ) ) {
       std::cout << "Could not upload texture data to device memory!" << std::endl;
       return false;
     }
@@ -658,7 +658,7 @@ namespace ApiWithoutSecrets {
       }
     };
 
-    vkUpdateDescriptorSets( GetDevice(), static_cast<uint32_t>(descriptor_writes.size()), &descriptor_writes[0], 0, nullptr );
+    vkUpdateDescriptorSets( GetDevice(), static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr );
     return true;
   }
 
@@ -886,7 +886,7 @@ namespace ApiWithoutSecrets {
       nullptr,                                                      // const void                                    *pNext
       0,                                                            // VkPipelineCreateFlags                          flags
       static_cast<uint32_t>(shader_stage_create_infos.size()),      // uint32_t                                       stageCount
-      &shader_stage_create_infos[0],                                // const VkPipelineShaderStageCreateInfo         *pStages
+      shader_stage_create_infos.data(),                             // const VkPipelineShaderStageCreateInfo         *pStages
       &vertex_input_state_create_info,                              // const VkPipelineVertexInputStateCreateInfo    *pVertexInputState;
       &input_assembly_state_create_info,                            // const VkPipelineInputAssemblyStateCreateInfo  *pInputAssemblyState
       nullptr,                                                      // const VkPipelineTessellationStateCreateInfo   *pTessellationState
@@ -921,7 +921,7 @@ namespace ApiWithoutSecrets {
       nullptr,                                        // const void                    *pNext
       0,                                              // VkShaderModuleCreateFlags      flags
       code.size(),                                    // size_t                         codeSize
-      reinterpret_cast<const uint32_t*>(&code[0])     // const uint32_t                *pCode
+      reinterpret_cast<const uint32_t*>(code.data())  // const uint32_t                *pCode
     };
 
     VkShaderModule shader_module;
@@ -977,7 +977,7 @@ namespace ApiWithoutSecrets {
       return false;
     }
 
-    memcpy( staging_buffer_memory_pointer, &vertex_data[0], Vulkan.VertexBuffer.Size );
+    memcpy( staging_buffer_memory_pointer, vertex_data.data(), Vulkan.VertexBuffer.Size );
 
     VkMappedMemoryRange flush_range = {
       VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,              // VkStructureType                        sType

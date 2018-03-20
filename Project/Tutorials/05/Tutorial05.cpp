@@ -174,7 +174,7 @@ namespace ApiWithoutSecrets {
       1,                                                // uint32_t                       subpassCount
       subpass_descriptions,                             // const VkSubpassDescription    *pSubpasses
       static_cast<uint32_t>(dependencies.size()),       // uint32_t                       dependencyCount
-      &dependencies[0]                                  // const VkSubpassDependency     *pDependencies
+      dependencies.data()                               // const VkSubpassDependency     *pDependencies
     };
 
     if( vkCreateRenderPass( GetDevice(), &render_pass_create_info, nullptr, &Vulkan.RenderPass ) != VK_SUCCESS ) {
@@ -196,7 +196,7 @@ namespace ApiWithoutSecrets {
       nullptr,                                          // const void                    *pNext
       0,                                                // VkShaderModuleCreateFlags      flags
       code.size(),                                      // size_t                         codeSize
-      reinterpret_cast<const uint32_t*>(&code[0])       // const uint32_t                *pCode
+      reinterpret_cast<const uint32_t*>(code.data())    // const uint32_t                *pCode
     };
 
     VkShaderModule shader_module;
@@ -287,9 +287,9 @@ namespace ApiWithoutSecrets {
       nullptr,                                                      // const void                                    *pNext
       0,                                                            // VkPipelineVertexInputStateCreateFlags          flags
       static_cast<uint32_t>(vertex_binding_descriptions.size()),    // uint32_t                                       vertexBindingDescriptionCount
-      &vertex_binding_descriptions[0],                              // const VkVertexInputBindingDescription         *pVertexBindingDescriptions
+      vertex_binding_descriptions.data(),                           // const VkVertexInputBindingDescription         *pVertexBindingDescriptions
       static_cast<uint32_t>(vertex_attribute_descriptions.size()),  // uint32_t                                       vertexAttributeDescriptionCount
-      &vertex_attribute_descriptions[0]                             // const VkVertexInputAttributeDescription       *pVertexAttributeDescriptions
+      vertex_attribute_descriptions.data()                          // const VkVertexInputAttributeDescription       *pVertexAttributeDescriptions
     };
 
     VkPipelineInputAssemblyStateCreateInfo input_assembly_state_create_info = {
@@ -371,7 +371,7 @@ namespace ApiWithoutSecrets {
       nullptr,                                                      // const void                                    *pNext
       0,                                                            // VkPipelineDynamicStateCreateFlags              flags
       static_cast<uint32_t>(dynamic_states.size()),                 // uint32_t                                       dynamicStateCount
-      &dynamic_states[0]                                            // const VkDynamicState                          *pDynamicStates
+      dynamic_states.data()                                         // const VkDynamicState                          *pDynamicStates
     };
 
     Tools::AutoDeleter<VkPipelineLayout, PFN_vkDestroyPipelineLayout> pipeline_layout = CreatePipelineLayout();
@@ -384,7 +384,7 @@ namespace ApiWithoutSecrets {
       nullptr,                                                      // const void                                    *pNext
       0,                                                            // VkPipelineCreateFlags                          flags
       static_cast<uint32_t>(shader_stage_create_infos.size()),      // uint32_t                                       stageCount
-      &shader_stage_create_infos[0],                                // const VkPipelineShaderStageCreateInfo         *pStages
+      shader_stage_create_infos.data(),                             // const VkPipelineShaderStageCreateInfo         *pStages
       &vertex_input_state_create_info,                              // const VkPipelineVertexInputStateCreateInfo    *pVertexInputState;
       &input_assembly_state_create_info,                            // const VkPipelineInputAssemblyStateCreateInfo  *pInputAssemblyState
       nullptr,                                                      // const VkPipelineTessellationStateCreateInfo   *pTessellationState
@@ -514,7 +514,7 @@ namespace ApiWithoutSecrets {
       return false;
     }
 
-    memcpy( staging_buffer_memory_pointer, &vertex_data[0], Vulkan.VertexBuffer.Size );
+    memcpy( staging_buffer_memory_pointer, vertex_data.data(), Vulkan.VertexBuffer.Size );
 
     VkMappedMemoryRange flush_range = {
       VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,            // VkStructureType                        sType

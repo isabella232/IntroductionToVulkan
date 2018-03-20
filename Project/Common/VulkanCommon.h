@@ -154,7 +154,7 @@ namespace ApiWithoutSecrets {
     const QueueParameters         GetGraphicsQueue() const;
     const QueueParameters         GetPresentQueue() const;
 
-    const SwapChainParameters     GetSwapChain() const;
+    const SwapChainParameters&    GetSwapChain() const;
 
   private:
     OS::LibraryHandle       VulkanLibrary;

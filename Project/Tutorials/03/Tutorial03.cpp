@@ -115,7 +115,7 @@ namespace ApiWithoutSecrets {
       nullptr,                                        // const void                    *pNext
       0,                                              // VkShaderModuleCreateFlags      flags
       code.size(),                                    // size_t                         codeSize
-      reinterpret_cast<const uint32_t*>(&code[0])     // const uint32_t                *pCode
+      reinterpret_cast<const uint32_t*>(code.data())  // const uint32_t                *pCode
     };
 
     VkShaderModule shader_module;
@@ -287,7 +287,7 @@ namespace ApiWithoutSecrets {
       nullptr,                                                      // const void                                    *pNext
       0,                                                            // VkPipelineCreateFlags                          flags
       static_cast<uint32_t>(shader_stage_create_infos.size()),      // uint32_t                                       stageCount
-      &shader_stage_create_infos[0],                                // const VkPipelineShaderStageCreateInfo         *pStages
+      shader_stage_create_infos.data(),                             // const VkPipelineShaderStageCreateInfo         *pStages
       &vertex_input_state_create_info,                              // const VkPipelineVertexInputStateCreateInfo    *pVertexInputState;
       &input_assembly_state_create_info,                            // const VkPipelineInputAssemblyStateCreateInfo  *pInputAssemblyState
       nullptr,                                                      // const VkPipelineTessellationStateCreateInfo   *pTessellationState
@@ -336,7 +336,7 @@ namespace ApiWithoutSecrets {
     uint32_t image_count = static_cast<uint32_t>(GetSwapChain().Images.size());
     Vulkan.GraphicsCommandBuffers.resize( image_count, VK_NULL_HANDLE );
 
-    if( !AllocateCommandBuffers( Vulkan.GraphicsCommandPool, image_count, &Vulkan.GraphicsCommandBuffers[0] ) ) {
+    if( !AllocateCommandBuffers( Vulkan.GraphicsCommandPool, image_count, Vulkan.GraphicsCommandBuffers.data() ) ) {
       std::cout << "Could not allocate command buffers!" << std::endl;
       return false;
     }
@@ -547,7 +547,7 @@ namespace ApiWithoutSecrets {
       vkDeviceWaitIdle( GetDevice() );
 
       if( (Vulkan.GraphicsCommandBuffers.size() > 0) && (Vulkan.GraphicsCommandBuffers[0] != VK_NULL_HANDLE) ) {
-        vkFreeCommandBuffers( GetDevice(), Vulkan.GraphicsCommandPool, static_cast<uint32_t>(Vulkan.GraphicsCommandBuffers.size()), &Vulkan.GraphicsCommandBuffers[0] );
+        vkFreeCommandBuffers( GetDevice(), Vulkan.GraphicsCommandPool, static_cast<uint32_t>(Vulkan.GraphicsCommandBuffers.size()), Vulkan.GraphicsCommandBuffers.data() );
         Vulkan.GraphicsCommandBuffers.clear();
       }
 

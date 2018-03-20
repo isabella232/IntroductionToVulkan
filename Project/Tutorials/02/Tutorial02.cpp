@@ -114,7 +114,7 @@ namespace ApiWithoutSecrets {
     }
 
     std::vector<VkExtensionProperties> available_extensions( extensions_count );
-    if( vkEnumerateInstanceExtensionProperties( nullptr, &extensions_count, &available_extensions[0] ) != VK_SUCCESS ) {
+    if( vkEnumerateInstanceExtensionProperties( nullptr, &extensions_count, available_extensions.data() ) != VK_SUCCESS ) {
       std::cout << "Error occurred during instance extensions enumeration!" << std::endl;
       return false;
     }
@@ -155,7 +155,7 @@ namespace ApiWithoutSecrets {
       0,                                              // uint32_t                   enabledLayerCount
       nullptr,                                        // const char * const        *ppEnabledLayerNames
       static_cast<uint32_t>(extensions.size()),       // uint32_t                   enabledExtensionCount
-      &extensions[0]                                  // const char * const        *ppEnabledExtensionNames
+      extensions.data()                               // const char * const        *ppEnabledExtensionNames
     };
 
     if( vkCreateInstance( &instance_create_info, nullptr, &Vulkan.Instance ) != VK_SUCCESS ) {
@@ -240,7 +240,7 @@ namespace ApiWithoutSecrets {
     }
 
     std::vector<VkPhysicalDevice> physical_devices( num_devices );
-    if( vkEnumeratePhysicalDevices( Vulkan.Instance, &num_devices, &physical_devices[0] ) != VK_SUCCESS ) {
+    if( vkEnumeratePhysicalDevices( Vulkan.Instance, &num_devices, physical_devices.data() ) != VK_SUCCESS ) {
       std::cout << "Error occurred during physical devices enumeration!" << std::endl;
       return false;
     }
@@ -268,7 +268,7 @@ namespace ApiWithoutSecrets {
       0,                                                // VkDeviceQueueCreateFlags     flags
       selected_graphics_queue_family_index,             // uint32_t                     queueFamilyIndex
       static_cast<uint32_t>(queue_priorities.size()),   // uint32_t                     queueCount
-      &queue_priorities[0]                              // const float                 *pQueuePriorities
+      queue_priorities.data()                           // const float                 *pQueuePriorities
     } );
 
     if( selected_graphics_queue_family_index != selected_present_queue_family_index ) {
@@ -278,7 +278,7 @@ namespace ApiWithoutSecrets {
         0,                                              // VkDeviceQueueCreateFlags     flags
         selected_present_queue_family_index,            // uint32_t                     queueFamilyIndex
         static_cast<uint32_t>(queue_priorities.size()), // uint32_t                     queueCount
-        &queue_priorities[0]                            // const float                 *pQueuePriorities
+        queue_priorities.data()                         // const float                 *pQueuePriorities
       } );
     }
 
@@ -291,11 +291,11 @@ namespace ApiWithoutSecrets {
       nullptr,                                          // const void                        *pNext
       0,                                                // VkDeviceCreateFlags                flags
       static_cast<uint32_t>(queue_create_infos.size()), // uint32_t                           queueCreateInfoCount
-      &queue_create_infos[0],                           // const VkDeviceQueueCreateInfo     *pQueueCreateInfos
+      queue_create_infos.data(),                        // const VkDeviceQueueCreateInfo     *pQueueCreateInfos
       0,                                                // uint32_t                           enabledLayerCount
       nullptr,                                          // const char * const                *ppEnabledLayerNames
       static_cast<uint32_t>(extensions.size()),         // uint32_t                           enabledExtensionCount
-      &extensions[0],                                   // const char * const                *ppEnabledExtensionNames
+      extensions.data(),                                // const char * const                *ppEnabledExtensionNames
       nullptr                                           // const VkPhysicalDeviceFeatures    *pEnabledFeatures
     };
 
@@ -318,7 +318,7 @@ namespace ApiWithoutSecrets {
     }
 
     std::vector<VkExtensionProperties> available_extensions( extensions_count );
-    if( vkEnumerateDeviceExtensionProperties( physical_device, nullptr, &extensions_count, &available_extensions[0] ) != VK_SUCCESS ) {
+    if( vkEnumerateDeviceExtensionProperties( physical_device, nullptr, &extensions_count, available_extensions.data() ) != VK_SUCCESS ) {
       std::cout << "Error occurred during physical device " << physical_device << " extensions enumeration!" << std::endl;
       return false;
     }
@@ -358,7 +358,7 @@ namespace ApiWithoutSecrets {
     std::vector<VkQueueFamilyProperties>  queue_family_properties( queue_families_count );
     std::vector<VkBool32>                 queue_present_support( queue_families_count );
 
-    vkGetPhysicalDeviceQueueFamilyProperties( physical_device, &queue_families_count, &queue_family_properties[0] );
+    vkGetPhysicalDeviceQueueFamilyProperties( physical_device, &queue_families_count, queue_family_properties.data() );
 
     uint32_t graphics_queue_family_index = UINT32_MAX;
     uint32_t present_queue_family_index = UINT32_MAX;
@@ -457,7 +457,7 @@ namespace ApiWithoutSecrets {
     }
 
     std::vector<VkSurfaceFormatKHR> surface_formats( formats_count );
-    if( vkGetPhysicalDeviceSurfaceFormatsKHR( Vulkan.PhysicalDevice, Vulkan.PresentationSurface, &formats_count, &surface_formats[0] ) != VK_SUCCESS ) {
+    if( vkGetPhysicalDeviceSurfaceFormatsKHR( Vulkan.PhysicalDevice, Vulkan.PresentationSurface, &formats_count, surface_formats.data() ) != VK_SUCCESS ) {
       std::cout << "Error occurred during presentation surface formats enumeration!" << std::endl;
       return false;
     }
@@ -470,7 +470,7 @@ namespace ApiWithoutSecrets {
     }
 
     std::vector<VkPresentModeKHR> present_modes( present_modes_count );
-    if( vkGetPhysicalDeviceSurfacePresentModesKHR( Vulkan.PhysicalDevice, Vulkan.PresentationSurface, &present_modes_count, &present_modes[0] ) != VK_SUCCESS ) {
+    if( vkGetPhysicalDeviceSurfacePresentModesKHR( Vulkan.PhysicalDevice, Vulkan.PresentationSurface, &present_modes_count, present_modes.data() ) != VK_SUCCESS ) {
       std::cout << "Error occurred during presentation surface present modes enumeration!" << std::endl;
       return false;
     }
@@ -677,7 +677,7 @@ namespace ApiWithoutSecrets {
       VK_COMMAND_BUFFER_LEVEL_PRIMARY,                // VkCommandBufferLevel         level
       image_count                                     // uint32_t                     bufferCount
     };
-    if( vkAllocateCommandBuffers( Vulkan.Device, &cmd_buffer_allocate_info, &Vulkan.PresentQueueCmdBuffers[0] ) != VK_SUCCESS ) {
+    if( vkAllocateCommandBuffers( Vulkan.Device, &cmd_buffer_allocate_info, Vulkan.PresentQueueCmdBuffers.data() ) != VK_SUCCESS ) {
       std::cout << "Could not allocate command buffers!" << std::endl;
       return false;
     }
@@ -693,7 +693,7 @@ namespace ApiWithoutSecrets {
     uint32_t image_count = static_cast<uint32_t>(Vulkan.PresentQueueCmdBuffers.size());
 
     std::vector<VkImage> swap_chain_images( image_count );
-    if( vkGetSwapchainImagesKHR( Vulkan.Device, Vulkan.SwapChain, &image_count, &swap_chain_images[0] ) != VK_SUCCESS ) {
+    if( vkGetSwapchainImagesKHR( Vulkan.Device, Vulkan.SwapChain, &image_count, swap_chain_images.data() ) != VK_SUCCESS ) {
       std::cout << "Could not get swap chain images!" << std::endl;
       return false;
     }
@@ -764,7 +764,7 @@ namespace ApiWithoutSecrets {
       vkDeviceWaitIdle( Vulkan.Device );
 
       if( (Vulkan.PresentQueueCmdBuffers.size() > 0) && (Vulkan.PresentQueueCmdBuffers[0] != VK_NULL_HANDLE) ) {
-        vkFreeCommandBuffers( Vulkan.Device, Vulkan.PresentQueueCmdPool, static_cast<uint32_t>(Vulkan.PresentQueueCmdBuffers.size()), &Vulkan.PresentQueueCmdBuffers[0] );
+        vkFreeCommandBuffers( Vulkan.Device, Vulkan.PresentQueueCmdPool, static_cast<uint32_t>(Vulkan.PresentQueueCmdBuffers.size()), Vulkan.PresentQueueCmdBuffers.data() );
         Vulkan.PresentQueueCmdBuffers.clear();
       }
 

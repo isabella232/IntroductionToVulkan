@@ -39,6 +39,7 @@ if( USE_PLATFORM STREQUAL "VK_USE_PLATFORM_WIN32_KHR" )
 	set( CMAKE_CXX_FLAGS_RELEASE         "${CMAKE_CXX_FLAGS_RELEASE} /MT" )
 	set( CMAKE_CXX_FLAGS_DEBUG           "${CMAKE_CXX_FLAGS_DEBUG} /MTd" )
 	set( PLATFORM_LIBRARY                "" )
+	add_definitions( -DNOMINMAX )
 elseif( USE_PLATFORM STREQUAL "VK_USE_PLATFORM_XCB_KHR" )
 	add_definitions( -std=c++11 )
 	set( PLATFORM_LIBRARY dl xcb )
@@ -108,11 +109,9 @@ set( PROJECT_HEADER_FILES REGULAR_EXPRESSION
 set( PROJECT_SOURCE_FILES REGULAR_EXPRESSION
 		"(Tutorial|Benchmark)[0-9]+[.]cpp" )
 
-source_group( "Header Files\\Common" FILES ${BASIC_SHARED_HEADER_FILES} )
-source_group( "Source Files\\Common" FILES ${BASIC_SHARED_SOURCE_FILES} )
+source_group( "Header Files\\Common" FILES ${BASIC_SHARED_HEADER_FILES} ${ADVANCED_SHARED_HEADER_FILES} )
+source_group( "Source Files\\Common" FILES ${BASIC_SHARED_SOURCE_FILES} ${ADVANCED_SHARED_SOURCE_FILES} )
 source_group( "Header Files\\External" FILES ${EXTERNAL_HEADER_FILES} )
-source_group( "Header Files\\Common" FILES ${ADVANCED_SHARED_HEADER_FILES} )
-source_group( "Source Files\\Common" FILES ${ADVANCED_SHARED_SOURCE_FILES} )
 source_group( "Header Files" FILES ${PROJECT_HEADER_FILES} )
 source_group( "Source Files" FILES ${PROJECT_SOURCE_FILES} )
 

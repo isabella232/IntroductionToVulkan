@@ -155,7 +155,7 @@ namespace ApiWithoutSecrets {
     }
 
     std::vector<VkPhysicalDevice> physical_devices( num_devices );
-    if( vkEnumeratePhysicalDevices( Vulkan.Instance, &num_devices, &physical_devices[0] ) != VK_SUCCESS ) {
+    if( vkEnumeratePhysicalDevices( Vulkan.Instance, &num_devices, physical_devices.data() ) != VK_SUCCESS ) {
       std::cout << "Error occurred during physical devices enumeration!" << std::endl;
       return false;
     }
@@ -181,7 +181,7 @@ namespace ApiWithoutSecrets {
       0,                                              // VkDeviceQueueCreateFlags     flags
       selected_queue_family_index,                    // uint32_t                     queueFamilyIndex
       static_cast<uint32_t>(queue_priorities.size()), // uint32_t                     queueCount
-      &queue_priorities[0]                            // const float                 *pQueuePriorities
+      queue_priorities.data()                         // const float                 *pQueuePriorities
     };
 
     VkDeviceCreateInfo device_create_info = {
@@ -231,7 +231,7 @@ namespace ApiWithoutSecrets {
     }
 
     std::vector<VkQueueFamilyProperties> queue_family_properties( queue_families_count );
-    vkGetPhysicalDeviceQueueFamilyProperties( physical_device, &queue_families_count, &queue_family_properties[0] );
+    vkGetPhysicalDeviceQueueFamilyProperties( physical_device, &queue_families_count, queue_family_properties.data() );
     for( uint32_t i = 0; i < queue_families_count; ++i ) {
       if( (queue_family_properties[i].queueCount > 0) &&
           (queue_family_properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) ) {

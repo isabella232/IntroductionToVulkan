@@ -120,7 +120,7 @@ namespace ApiWithoutSecrets {
           TranslateMessage( &message );
           DispatchMessage( &message );
         } else {
-          // Draw
+          // Resize
           if( resize ) {
             resize = false;
             if( !project.OnWindowSizeChanged() ) {
@@ -128,6 +128,7 @@ namespace ApiWithoutSecrets {
               break;
             }
           }
+          // Draw
           if( project.ReadyToDraw() ) {
             if( !project.Draw() ) {
               result = false;
