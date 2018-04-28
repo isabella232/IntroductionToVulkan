@@ -21,7 +21,7 @@ echo Preparing 'IntroductionToVulkan' solution...
 mkdir build
 cd build
 
-cmake.exe .. -DUSE_PLATFORM=VK_USE_PLATFORM_WIN32_KHR -G "Visual Studio 12 2013 Win64"
+cmake.exe .. -DUSE_PLATFORM=VK_USE_PLATFORM_WIN32_KHR -G "Visual Studio 15 2017 Win64"
 
 start "" "IntroductionToVulkan.sln"
 
