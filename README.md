@@ -57,7 +57,7 @@ This tutorial shows how to set up vertex attributes and bind buffer with a verte
 <img src="./Document/Images/05 - Staging Resources.png" height="96px" align="right">
 
 #### Copying data between buffers
-##### https://software.intel.com/en-us/articles/api-without-secrets-introduction-to-vulkan-part-5
+##### https://www.intel.com/content/www/us/en/developer/articles/training/api-without-secrets-introduction-to-vulkan-part-5.html
 
 In this example staging resources are presented. They are used as an intermediate resources for copying data between CPU and GPU. This way, resources involved in rendering can be bound only to a device local (very fast) memory.
 
@@ -77,6 +77,6 @@ This tutorial shows what resources are needed and how they should be prepared to
 <img src="./Document/Images/07 - Uniform Buffers.png" height="96px" align="right">
 
 #### Using buffers in shaders
-##### https://software.intel.com/en-us/articles/api-without-secrets-introduction-to-vulkan-part-7
+##### https://www.intel.com/content/www/us/en/developer/articles/training/api-without-secrets-introduction-to-vulkan-part-7.html
 
 Here it is shown how to add uniform buffer to descriptor sets, how to provide data for projection matrix through it and how to use it inside shader.
